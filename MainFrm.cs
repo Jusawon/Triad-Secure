@@ -182,6 +182,13 @@ namespace Triad_Secure
             item.SubItems.Add(fi.LastWriteTime.ToString());
 
             SelectedFileViewer.Items.Add(item);
+
+            // Dispose old stream if it exists
+            selectedFileStream?.Dispose();
+
+            // Open new stream for the selected file
+            selectedFileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            selectedFilePath = filePath;
         }
 
         //Resizing the MainFrm Contents
@@ -246,6 +253,22 @@ namespace Triad_Secure
                     DisplaySelectedFile(ofd.FileName);
                 }
             }
+        }
+
+        //Security Functions
+        public void Encrypter(string EncryptionMethod)
+        {
+
+        }
+
+        public void Hasher(string HashMethod)
+        {
+
+        }
+
+        public void Salter(string PassPhrase)
+        {
+
         }
     }
 }

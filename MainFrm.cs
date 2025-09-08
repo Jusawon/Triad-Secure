@@ -26,16 +26,50 @@ namespace Triad_Secure
         public string EncryptionAlgorithm;
         private FileStream? selectedFileStream;
         private string? selectedFilePath;
+        private bool FileSelected = false;
 
         private string backupFolder = Path.Combine(Application.StartupPath, "Backups");
         private void MainFrm_Load(object sender, EventArgs e)
         {
+            // Hash algorithms
+            var hashAlgos = CryptoConfig.AllowOnlyFipsAlgorithms
+                ? new[] { "SHA1", "SHA256", "SHA384", "SHA512" }
+                : new[] { "MD5", "SHA1", "SHA256", "SHA384", "SHA512" };
+
+            HashCmb.Items.Clear();
+            HashCmb.Items.Add("- Pick Your Hashing Method -");
+            foreach (var algo in hashAlgos)
+                HashCmb.Items.Add(algo);
+            HashCmb.SelectedIndex = 0;
+
+            // Symmetric encryption algorithms
+            var symAlgos = new[] { "AES", "DES", "RC2", "TripleDES" };
+
+            EncryptionCmb.Items.Clear();
+            EncryptionCmb.Items.Add("- Pick Your Encryption Method -");
+            foreach (var algo in symAlgos)
+                EncryptionCmb.Items.Add(algo);
+            EncryptionCmb.SelectedIndex = 0;
+
+
+            this.Resize += MainFrm_Resize;
+            //Ensure folder exists with Administrator-only access
+            EnsureAdminOnlyFolder();
+
+            //Setup ListView
+            SetupListViews();
+
+            //Display contents
+            DisplayBackupContents();
+
+
+            /*=========================OLD CODE MIGHT NEED LATER=========================
             // ==== Fill Hash Algorithms ====
             HashCmb.Items.Clear();
             HashCmb.Items.Add("- Pick Your Hashing Method -"); // placeholder
 
-            var hashAlgos = typeof(HashAlgorithm).Assembly.GetTypes()
-                .Where(t => typeof(HashAlgorithm).IsAssignableFrom(t) && !t.IsAbstract)
+            var hashAlgos = typeof(HashAlgorithmName).Assembly.GetTypes()
+                .Where(t => typeof(HashAlgorithmName).IsAssignableFrom(t) && !t.IsAbstract)
                 .Select(t => t.Name.Replace("CryptoServiceProvider", "").Replace("Managed", ""))
                 .Distinct()
                 .OrderBy(n => n);
@@ -55,6 +89,12 @@ namespace Triad_Secure
                 .Select(t => t.Name.Replace("CryptoServiceProvider", "").Replace("Managed", ""))
                 .Distinct();
 
+            foreach (var algo in symAlgos)
+                EncryptionCmb.Items.Add(algo);
+
+            EncryptionCmb.SelectedIndex = 0;
+
+            Doubt that Asymmetric Could be implemented easily
             var asymAlgos = typeof(AsymmetricAlgorithm).Assembly.GetTypes()
                 .Where(t => typeof(AsymmetricAlgorithm).IsAssignableFrom(t) && !t.IsAbstract)
                 .Select(t => t.Name)
@@ -62,18 +102,8 @@ namespace Triad_Secure
 
             foreach (var algo in symAlgos.Concat(asymAlgos).OrderBy(n => n))
                 EncryptionCmb.Items.Add(algo);
-
             EncryptionCmb.SelectedIndex = 0;
-
-            this.Resize += MainFrm_Resize;
-            //Ensure folder exists with Administrator-only access
-            EnsureAdminOnlyFolder();
-
-            //Setup ListView
-            SetupListViews();
-
-            //Display contents
-            DisplayBackupContents();
+            */
         }
 
         private void EnsureAdminOnlyFolder()
@@ -217,26 +247,24 @@ namespace Triad_Secure
 
         private void HashCmb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0)
+            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0 || !FileSelected)
             {
                 EncryptBtn.Enabled = false;
             }
             else
             {
-                HashAlgorithm = HashCmb.SelectedItem.ToString();
                 EncryptBtn.Enabled = true;
             }
         }
 
         private void EncryptionCmb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0)
+            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0 || !FileSelected)
             {
                 EncryptBtn.Enabled = false;
             }
             else
             {
-                EncryptionAlgorithm = EncryptionCmb.SelectedItem.ToString();
                 EncryptBtn.Enabled = true;
             }
         }
@@ -251,6 +279,24 @@ namespace Triad_Secure
                 if (ofd.ShowDialog(this) == DialogResult.OK)
                 {
                     DisplaySelectedFile(ofd.FileName);
+                    FileSelected = true;
+                    if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0) { EncryptBtn.Enabled = true; }
+                }
+            }
+        }
+        private void EncryptBtn_Click(object sender, EventArgs e)
+        {
+            if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0 && FileSelected) {
+            HashAlgorithm = HashCmb.SelectedItem.ToString();
+            EncryptionAlgorithm = EncryptionCmb.SelectedItem.ToString();
+            }
+            using (var passFrm = new PassFrm())
+            {
+                if (passFrm.ShowDialog(this) == DialogResult.OK)
+                {
+                    string passphrase = passFrm.Passphrase;
+
+                    // Implement Salting, Encryption, And Hashing From Here On Out
                 }
             }
         }
@@ -270,5 +316,7 @@ namespace Triad_Secure
         {
 
         }
+
+
     }
 }

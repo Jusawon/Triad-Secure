@@ -167,6 +167,7 @@
             EncryptBtn.TabIndex = 0;
             EncryptBtn.Text = "&Encrypt";
             EncryptBtn.UseVisualStyleBackColor = true;
+            EncryptBtn.Click += EncryptBtn_Click;
             // 
             // BackUpLbl
             // 

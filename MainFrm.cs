@@ -63,7 +63,7 @@ namespace Triad_Secure
             DisplayBackupContents();
 
 
-            /*=========================OLD CODE MIGHT NEED LATER=========================
+            /*=========================OLD CODE MIGHT NEED LATER=========================//
             // ==== Fill Hash Algorithms ====
             HashCmb.Items.Clear();
             HashCmb.Items.Add("- Pick Your Hashing Method -"); // placeholder

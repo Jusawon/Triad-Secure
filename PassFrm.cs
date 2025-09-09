@@ -39,7 +39,5 @@ namespace Triad_Secure
         {
             OkBtn.Enabled = !string.IsNullOrWhiteSpace(PassTxt.Text);
         }
-
-
     }
 }

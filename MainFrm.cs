@@ -52,7 +52,6 @@ namespace Triad_Secure
             EncryptionCmb.SelectedIndex = 0;
 
 
-            this.Resize += MainFrm_Resize;
             //Ensure folder exists with Administrator-only access
             EnsureAdminOnlyFolder();
 
@@ -61,6 +60,7 @@ namespace Triad_Secure
 
             //Display contents
             DisplayBackupContents();
+            ResizeContent();
 
 
             /*=========================OLD CODE MIGHT NEED LATER=========================//
@@ -148,6 +148,10 @@ namespace Triad_Secure
             }
         }
 
+        private void MainFrm_Resize(object sender, EventArgs e)
+        {
+            ResizeContent();
+        }
 
         private void SetupListViews()
         {
@@ -222,7 +226,70 @@ namespace Triad_Secure
         }
 
         //Resizing the MainFrm Contents
-        private void MainFrm_Resize(object sender, EventArgs e)
+
+        private void HashCmb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0 || !FileSelected)
+            {
+                SecureBtn.Enabled = false;
+            }
+            else
+            {
+                SecureBtn.Enabled = true;
+            }
+        }
+
+
+        private void EncryptionCmb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0 || !FileSelected)
+            {
+                SecureBtn.Enabled = false;
+            }
+            else
+            {
+                SecureBtn.Enabled = true;
+            }
+        }
+
+        private void OpenMn_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Select a file";
+                ofd.Filter = "All Files (*.*)|*.*";
+
+                if (ofd.ShowDialog(this) == DialogResult.OK)
+                {
+                    DisplaySelectedFile(ofd.FileName);
+                    FileSelected = true;
+                    if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0) { SecureBtn.Enabled = true; }
+                }
+            }
+        }
+        private void EncryptBtn_Click(object sender, EventArgs e)
+        {
+            if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0 && FileSelected)
+            {
+                HashAlgorithm = HashCmb.SelectedItem.ToString();
+                EncryptionAlgorithm = EncryptionCmb.SelectedItem.ToString();
+            }
+            using (var passFrm = new PassFrm())
+            {
+                if (passFrm.ShowDialog(this) == DialogResult.OK)
+                {
+                    string passphrase = passFrm.Passphrase;
+
+
+                    // Implement Salting, Encryption, And Hashing From Here On Out
+
+                    //Clearing the passphrase
+                    passphrase = string.Empty;
+                }
+            }
+        }
+
+        private void ResizeContent()
         {
             if (BackupContentViewer.Columns.Count > 0)
             {
@@ -244,83 +311,19 @@ namespace Triad_Secure
                 SelectedFileViewer.Columns[3].Width = (int)(totalWidth * 0.2);  // Modified = 20%
             }
         }
-
-        private void HashCmb_SelectedIndexChanged(object sender, EventArgs e)
+        private void IntegrityCheckMn_Click(object sender, EventArgs e)
         {
-            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0 || !FileSelected)
-            {
-                EncryptBtn.Enabled = false;
-            }
-            else
-            {
-                EncryptBtn.Enabled = true;
-            }
+            var frm = new IntegrityFrm();
+            frm.Show(this);
         }
 
-        private void EncryptionCmb_SelectedIndexChanged(object sender, EventArgs e)
+        private void ClearBtn_Click(object sender, EventArgs e)
         {
-            if (HashCmb.SelectedIndex == 0 || EncryptionCmb.SelectedIndex == 0 || !FileSelected)
-            {
-                EncryptBtn.Enabled = false;
-            }
-            else
-            {
-                EncryptBtn.Enabled = true;
-            }
+            HashCmb.SelectedIndex = 0;
+            EncryptionCmb.SelectedIndex = 0;
+            SelectedFileViewer.Items.Clear();
+            selectedFileStream?.Dispose();
+            FileSelected = false;
         }
-
-        private void OpenMn_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog ofd = new OpenFileDialog())
-            {
-                ofd.Title = "Select a file";
-                ofd.Filter = "All Files (*.*)|*.*";
-
-                if (ofd.ShowDialog(this) == DialogResult.OK)
-                {
-                    DisplaySelectedFile(ofd.FileName);
-                    FileSelected = true;
-                    if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0) { EncryptBtn.Enabled = true; }
-                }
-            }
-        }
-        private void EncryptBtn_Click(object sender, EventArgs e)
-        {
-            if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0 && FileSelected) {
-            HashAlgorithm = HashCmb.SelectedItem.ToString();
-            EncryptionAlgorithm = EncryptionCmb.SelectedItem.ToString();
-            }
-            using (var passFrm = new PassFrm())
-            {
-                if (passFrm.ShowDialog(this) == DialogResult.OK)
-                {
-                    string passphrase = passFrm.Passphrase;
-
-
-                    // Implement Salting, Encryption, And Hashing From Here On Out
-
-                    //Clearing the passphrase
-                    passphrase = string.Empty;
-                }
-            }
-        }
-
-        //Security Functions
-        public void Encrypter(string EncryptionMethod)
-        {
-
-        }
-
-        public void Hasher(string HashMethod)
-        {
-
-        }
-
-        public void Salter(string PassPhrase)
-        {
-
-        }
-
-
     }
 }

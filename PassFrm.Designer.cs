@@ -29,22 +29,22 @@
         private void InitializeComponent()
         {
             PassTLP = new TableLayoutPanel();
-            PassLbl = new Label();
             ButtonsTLP = new TableLayoutPanel();
             OkBtn = new Button();
             CancelBtn = new Button();
             PassTxt = new TextBox();
+            InputGB = new GroupBox();
             PassTLP.SuspendLayout();
             ButtonsTLP.SuspendLayout();
+            InputGB.SuspendLayout();
             SuspendLayout();
             // 
             // PassTLP
             // 
             PassTLP.ColumnCount = 1;
             PassTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            PassTLP.Controls.Add(PassLbl, 0, 0);
             PassTLP.Controls.Add(ButtonsTLP, 0, 2);
-            PassTLP.Controls.Add(PassTxt, 0, 1);
+            PassTLP.Controls.Add(InputGB, 0, 0);
             PassTLP.Dock = DockStyle.Fill;
             PassTLP.Location = new Point(0, 0);
             PassTLP.Name = "PassTLP";
@@ -56,15 +56,6 @@
             PassTLP.Size = new Size(578, 144);
             PassTLP.TabIndex = 0;
             // 
-            // PassLbl
-            // 
-            PassLbl.AutoSize = true;
-            PassLbl.Location = new Point(3, 0);
-            PassLbl.Name = "PassLbl";
-            PassLbl.Size = new Size(352, 25);
-            PassLbl.TabIndex = 1;
-            PassLbl.Text = "Enter The Passphrase For Your Secured FIle:";
-            // 
             // ButtonsTLP
             // 
             ButtonsTLP.ColumnCount = 2;
@@ -73,11 +64,11 @@
             ButtonsTLP.Controls.Add(OkBtn, 0, 0);
             ButtonsTLP.Controls.Add(CancelBtn, 1, 0);
             ButtonsTLP.Dock = DockStyle.Fill;
-            ButtonsTLP.Location = new Point(3, 82);
+            ButtonsTLP.Location = new Point(3, 60);
             ButtonsTLP.Name = "ButtonsTLP";
             ButtonsTLP.RowCount = 1;
             ButtonsTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            ButtonsTLP.Size = new Size(572, 59);
+            ButtonsTLP.Size = new Size(572, 81);
             ButtonsTLP.TabIndex = 5;
             // 
             // OkBtn
@@ -91,7 +82,7 @@
             OkBtn.Location = new Point(40, 10);
             OkBtn.Margin = new Padding(40, 10, 40, 10);
             OkBtn.Name = "OkBtn";
-            OkBtn.Size = new Size(206, 39);
+            OkBtn.Size = new Size(206, 61);
             OkBtn.TabIndex = 0;
             OkBtn.Text = "OK";
             OkBtn.UseVisualStyleBackColor = false;
@@ -106,7 +97,7 @@
             CancelBtn.Location = new Point(326, 10);
             CancelBtn.Margin = new Padding(40, 10, 40, 10);
             CancelBtn.Name = "CancelBtn";
-            CancelBtn.Size = new Size(206, 39);
+            CancelBtn.Size = new Size(206, 61);
             CancelBtn.TabIndex = 3;
             CancelBtn.Text = "Cancel";
             CancelBtn.UseVisualStyleBackColor = true;
@@ -115,29 +106,44 @@
             // PassTxt
             // 
             PassTxt.Dock = DockStyle.Fill;
-            PassTxt.Location = new Point(20, 45);
+            PassTxt.Location = new Point(3, 27);
             PassTxt.Margin = new Padding(20, 3, 20, 3);
             PassTxt.Name = "PassTxt";
             PassTxt.PasswordChar = '*';
-            PassTxt.Size = new Size(538, 31);
+            PassTxt.Size = new Size(566, 31);
             PassTxt.TabIndex = 0;
             PassTxt.TextChanged += PassTxt_TextChanged;
             // 
+            // InputGB
+            // 
+            InputGB.Controls.Add(PassTxt);
+            InputGB.Dock = DockStyle.Fill;
+            InputGB.Location = new Point(3, 3);
+            InputGB.Name = "InputGB";
+            InputGB.Size = new Size(572, 51);
+            InputGB.TabIndex = 6;
+            InputGB.TabStop = false;
+            InputGB.Text = "Enter The Passphrase For Your Encrypted File:";
+            // 
             // PassFrm
             // 
+            AcceptButton = OkBtn;
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(578, 144);
             Controls.Add(PassTLP);
-            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            FormBorderStyle = FormBorderStyle.Fixed3D;
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "PassFrm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Enter Your Passphrase!";
             Load += PassFrm_Load;
             PassTLP.ResumeLayout(false);
-            PassTLP.PerformLayout();
             ButtonsTLP.ResumeLayout(false);
             ButtonsTLP.PerformLayout();
+            InputGB.ResumeLayout(false);
+            InputGB.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -145,9 +151,9 @@
 
         private TableLayoutPanel PassTLP;
         private TextBox PassTxt;
-        private Label PassLbl;
         private TableLayoutPanel ButtonsTLP;
         private Button OkBtn;
         private Button CancelBtn;
+        private GroupBox InputGB;
     }
 }

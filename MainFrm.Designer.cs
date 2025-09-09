@@ -34,28 +34,33 @@
             OpenMn = new ToolStripMenuItem();
             IntegrityCheckMn = new ToolStripMenuItem();
             MiddleTLP = new TableLayoutPanel();
-            MethodsFLP = new FlowLayoutPanel();
+            ButtonsFLP = new FlowLayoutPanel();
             HashCmb = new ComboBox();
             EncryptionCmb = new ComboBox();
-            EncryptBtn = new Button();
-            BackUpLbl = new Label();
+            ButtonsTLP = new TableLayoutPanel();
+            ClearBtn = new Button();
+            SecureBtn = new Button();
             MainTLP = new TableLayoutPanel();
-            SelectedFileLbl = new Label();
+            BackUpGB = new GroupBox();
+            SelectedFileGB = new GroupBox();
             SelectedFileViewer = new ListView();
             MainFrmMS.SuspendLayout();
             MiddleTLP.SuspendLayout();
-            MethodsFLP.SuspendLayout();
+            ButtonsFLP.SuspendLayout();
+            ButtonsTLP.SuspendLayout();
             MainTLP.SuspendLayout();
+            BackUpGB.SuspendLayout();
+            SelectedFileGB.SuspendLayout();
             SuspendLayout();
             // 
             // BackupContentViewer
             // 
             BackupContentViewer.Dock = DockStyle.Fill;
             BackupContentViewer.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            BackupContentViewer.Location = new Point(7, 460);
+            BackupContentViewer.Location = new Point(3, 27);
             BackupContentViewer.Margin = new Padding(6);
             BackupContentViewer.Name = "BackupContentViewer";
-            BackupContentViewer.Size = new Size(1096, 305);
+            BackupContentViewer.Size = new Size(1096, 316);
             BackupContentViewer.TabIndex = 0;
             BackupContentViewer.UseCompatibleStateImageBehavior = false;
             // 
@@ -93,6 +98,7 @@
             IntegrityCheckMn.Size = new Size(161, 29);
             IntegrityCheckMn.Text = "&Integrity Checker";
             IntegrityCheckMn.ToolTipText = "Check Integrity Between Files and Backuped Files";
+            IntegrityCheckMn.Click += IntegrityCheckMn_Click;
             // 
             // MiddleTLP
             // 
@@ -101,83 +107,102 @@
             MiddleTLP.ColumnCount = 2;
             MiddleTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 37.50234F));
             MiddleTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 62.49766F));
-            MiddleTLP.Controls.Add(MethodsFLP, 1, 0);
-            MiddleTLP.Controls.Add(EncryptBtn, 0, 0);
-            MiddleTLP.Controls.Add(BackUpLbl, 0, 1);
+            MiddleTLP.Controls.Add(ButtonsFLP, 1, 0);
+            MiddleTLP.Controls.Add(ButtonsTLP, 0, 0);
             MiddleTLP.Dock = DockStyle.Fill;
-            MiddleTLP.Location = new Point(4, 363);
+            MiddleTLP.Location = new Point(4, 359);
             MiddleTLP.Margin = new Padding(3, 6, 3, 6);
             MiddleTLP.Name = "MiddleTLP";
-            MiddleTLP.RowCount = 2;
+            MiddleTLP.RowCount = 1;
             MiddleTLP.RowStyles.Add(new RowStyle());
-            MiddleTLP.RowStyles.Add(new RowStyle());
-            MiddleTLP.Size = new Size(1102, 84);
+            MiddleTLP.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            MiddleTLP.Size = new Size(1102, 53);
             MiddleTLP.TabIndex = 4;
             // 
-            // MethodsFLP
+            // ButtonsFLP
             // 
-            MethodsFLP.AutoSize = true;
-            MethodsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            MethodsFLP.Controls.Add(HashCmb);
-            MethodsFLP.Controls.Add(EncryptionCmb);
-            MethodsFLP.Dock = DockStyle.Right;
-            MethodsFLP.Location = new Point(454, 4);
-            MethodsFLP.Margin = new Padding(0, 4, 0, 4);
-            MethodsFLP.Name = "MethodsFLP";
-            MethodsFLP.Size = new Size(648, 39);
-            MethodsFLP.TabIndex = 0;
+            ButtonsFLP.Anchor = AnchorStyles.Right;
+            ButtonsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ButtonsFLP.Controls.Add(HashCmb);
+            ButtonsFLP.Controls.Add(EncryptionCmb);
+            ButtonsFLP.Location = new Point(416, 6);
+            ButtonsFLP.Margin = new Padding(3, 6, 3, 6);
+            ButtonsFLP.Name = "ButtonsFLP";
+            ButtonsFLP.Size = new Size(683, 41);
+            ButtonsFLP.TabIndex = 1;
             // 
             // HashCmb
             // 
-            HashCmb.Dock = DockStyle.Fill;
+            HashCmb.Anchor = AnchorStyles.Right;
             HashCmb.FormattingEnabled = true;
-            HashCmb.Location = new Point(11, 6);
-            HashCmb.Margin = new Padding(11, 6, 11, 6);
-            HashCmb.MaximumSize = new Size(311, 0);
+            HashCmb.Location = new Point(3, 3);
+            HashCmb.MinimumSize = new Size(300, 0);
             HashCmb.Name = "HashCmb";
-            HashCmb.Size = new Size(301, 33);
+            HashCmb.Size = new Size(335, 33);
             HashCmb.TabIndex = 3;
             HashCmb.Text = "- Pick Your Hashing Method -";
             HashCmb.SelectedIndexChanged += HashCmb_SelectedIndexChanged;
             // 
             // EncryptionCmb
             // 
-            EncryptionCmb.Dock = DockStyle.Fill;
+            EncryptionCmb.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             EncryptionCmb.FormattingEnabled = true;
-            EncryptionCmb.Location = new Point(334, 6);
-            EncryptionCmb.Margin = new Padding(11, 6, 11, 6);
-            EncryptionCmb.MaximumSize = new Size(311, 0);
+            EncryptionCmb.Location = new Point(344, 3);
+            EncryptionCmb.MinimumSize = new Size(300, 0);
             EncryptionCmb.Name = "EncryptionCmb";
-            EncryptionCmb.Size = new Size(303, 33);
+            EncryptionCmb.Size = new Size(336, 33);
             EncryptionCmb.TabIndex = 2;
             EncryptionCmb.Text = "- Pick Your Encryption Method -";
             EncryptionCmb.SelectedIndexChanged += EncryptionCmb_SelectedIndexChanged;
             // 
-            // EncryptBtn
+            // ButtonsTLP
             // 
-            EncryptBtn.AutoSize = true;
-            EncryptBtn.Dock = DockStyle.Fill;
-            EncryptBtn.Enabled = false;
-            EncryptBtn.Location = new Point(33, 6);
-            EncryptBtn.Margin = new Padding(33, 6, 11, 6);
-            EncryptBtn.MaximumSize = new Size(222, 0);
-            EncryptBtn.MinimumSize = new Size(167, 0);
-            EncryptBtn.Name = "EncryptBtn";
-            EncryptBtn.Size = new Size(222, 35);
-            EncryptBtn.TabIndex = 0;
-            EncryptBtn.Text = "&Encrypt";
-            EncryptBtn.UseVisualStyleBackColor = true;
-            EncryptBtn.Click += EncryptBtn_Click;
+            ButtonsTLP.AutoSize = true;
+            ButtonsTLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ButtonsTLP.ColumnCount = 2;
+            ButtonsTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            ButtonsTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            ButtonsTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
+            ButtonsTLP.Controls.Add(ClearBtn, 1, 0);
+            ButtonsTLP.Controls.Add(SecureBtn, 0, 0);
+            ButtonsTLP.Dock = DockStyle.Fill;
+            ButtonsTLP.Location = new Point(3, 6);
+            ButtonsTLP.Margin = new Padding(3, 6, 3, 6);
+            ButtonsTLP.Name = "ButtonsTLP";
+            ButtonsTLP.RowCount = 1;
+            ButtonsTLP.RowStyles.Add(new RowStyle());
+            ButtonsTLP.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            ButtonsTLP.Size = new Size(407, 41);
+            ButtonsTLP.TabIndex = 5;
             // 
-            // BackUpLbl
+            // ClearBtn
             // 
-            BackUpLbl.AutoSize = true;
-            BackUpLbl.Location = new Point(11, 53);
-            BackUpLbl.Margin = new Padding(11, 6, 3, 6);
-            BackUpLbl.Name = "BackUpLbl";
-            BackUpLbl.Size = new Size(131, 25);
-            BackUpLbl.TabIndex = 1;
-            BackUpLbl.Text = "Back Up Folder";
+            ClearBtn.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            ClearBtn.AutoSize = true;
+            ClearBtn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ClearBtn.Location = new Point(206, 3);
+            ClearBtn.MinimumSize = new Size(150, 0);
+            ClearBtn.Name = "ClearBtn";
+            ClearBtn.Size = new Size(198, 35);
+            ClearBtn.TabIndex = 3;
+            ClearBtn.Text = "&Clear";
+            ClearBtn.UseVisualStyleBackColor = true;
+            ClearBtn.Click += ClearBtn_Click;
+            // 
+            // SecureBtn
+            // 
+            SecureBtn.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            SecureBtn.AutoSize = true;
+            SecureBtn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            SecureBtn.Enabled = false;
+            SecureBtn.Location = new Point(3, 3);
+            SecureBtn.MinimumSize = new Size(150, 0);
+            SecureBtn.Name = "SecureBtn";
+            SecureBtn.Size = new Size(197, 35);
+            SecureBtn.TabIndex = 0;
+            SecureBtn.Text = "&Secure";
+            SecureBtn.UseVisualStyleBackColor = true;
+            SecureBtn.Click += EncryptBtn_Click;
             // 
             // MainTLP
             // 
@@ -185,40 +210,52 @@
             MainTLP.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
             MainTLP.ColumnCount = 1;
             MainTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            MainTLP.Controls.Add(SelectedFileLbl, 0, 0);
-            MainTLP.Controls.Add(SelectedFileViewer, 0, 1);
-            MainTLP.Controls.Add(BackupContentViewer, 0, 3);
-            MainTLP.Controls.Add(MiddleTLP, 0, 2);
+            MainTLP.Controls.Add(BackUpGB, 0, 2);
+            MainTLP.Controls.Add(MiddleTLP, 0, 1);
+            MainTLP.Controls.Add(SelectedFileGB, 0, 0);
             MainTLP.Dock = DockStyle.Fill;
             MainTLP.Location = new Point(0, 33);
             MainTLP.Margin = new Padding(3, 4, 3, 4);
             MainTLP.Name = "MainTLP";
-            MainTLP.RowCount = 4;
-            MainTLP.RowStyles.Add(new RowStyle());
+            MainTLP.RowCount = 3;
             MainTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             MainTLP.RowStyles.Add(new RowStyle());
             MainTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            MainTLP.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             MainTLP.Size = new Size(1110, 772);
             MainTLP.TabIndex = 2;
             // 
-            // SelectedFileLbl
+            // BackUpGB
             // 
-            SelectedFileLbl.AutoSize = true;
-            SelectedFileLbl.Location = new Point(12, 7);
-            SelectedFileLbl.Margin = new Padding(11, 6, 3, 6);
-            SelectedFileLbl.Name = "SelectedFileLbl";
-            SelectedFileLbl.Size = new Size(113, 25);
-            SelectedFileLbl.TabIndex = 3;
-            SelectedFileLbl.Text = "Selected File:";
+            BackUpGB.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            BackUpGB.Controls.Add(BackupContentViewer);
+            BackUpGB.Dock = DockStyle.Fill;
+            BackUpGB.Location = new Point(4, 422);
+            BackUpGB.Name = "BackUpGB";
+            BackUpGB.Size = new Size(1102, 346);
+            BackUpGB.TabIndex = 4;
+            BackUpGB.TabStop = false;
+            BackUpGB.Text = "Back Up:";
+            // 
+            // SelectedFileGB
+            // 
+            SelectedFileGB.Controls.Add(SelectedFileViewer);
+            SelectedFileGB.Dock = DockStyle.Fill;
+            SelectedFileGB.Location = new Point(4, 4);
+            SelectedFileGB.Name = "SelectedFileGB";
+            SelectedFileGB.Size = new Size(1102, 345);
+            SelectedFileGB.TabIndex = 2;
+            SelectedFileGB.TabStop = false;
+            SelectedFileGB.Text = "Selected File:";
             // 
             // SelectedFileViewer
             // 
             SelectedFileViewer.Dock = DockStyle.Fill;
             SelectedFileViewer.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            SelectedFileViewer.Location = new Point(7, 45);
+            SelectedFileViewer.Location = new Point(3, 27);
             SelectedFileViewer.Margin = new Padding(6);
             SelectedFileViewer.Name = "SelectedFileViewer";
-            SelectedFileViewer.Size = new Size(1096, 305);
+            SelectedFileViewer.Size = new Size(1096, 315);
             SelectedFileViewer.TabIndex = 5;
             SelectedFileViewer.UseCompatibleStateImageBehavior = false;
             // 
@@ -229,19 +266,25 @@
             ClientSize = new Size(1110, 805);
             Controls.Add(MainTLP);
             Controls.Add(MainFrmMS);
+            IsMdiContainer = true;
             MainMenuStrip = MainFrmMS;
             Margin = new Padding(3, 4, 3, 4);
             MinimumSize = new Size(1131, 861);
             Name = "MainFrm";
             Text = "Welcome To Triad Secure! ";
             Load += MainFrm_Load;
+            Resize += MainFrm_Resize;
             MainFrmMS.ResumeLayout(false);
             MainFrmMS.PerformLayout();
             MiddleTLP.ResumeLayout(false);
             MiddleTLP.PerformLayout();
-            MethodsFLP.ResumeLayout(false);
+            ButtonsFLP.ResumeLayout(false);
+            ButtonsTLP.ResumeLayout(false);
+            ButtonsTLP.PerformLayout();
             MainTLP.ResumeLayout(false);
             MainTLP.PerformLayout();
+            BackUpGB.ResumeLayout(false);
+            SelectedFileGB.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
 
@@ -256,13 +299,19 @@
         private System.Windows.Forms.ToolStripMenuItem IntegrityCheckMn;
         private System.Windows.Forms.TableLayoutPanel MainTLP;
         private System.Windows.Forms.TableLayoutPanel MiddleTLP;
-        private System.Windows.Forms.Button EncryptBtn;
+        private System.Windows.Forms.Button SecureBtn;
         private System.Windows.Forms.ComboBox EncryptionCmb;
         private System.Windows.Forms.ComboBox HashCmb;
-        private System.Windows.Forms.FlowLayoutPanel MethodsFLP;
         private System.Windows.Forms.Label BackUpLbl;
         private System.Windows.Forms.ListView SelectedFileViewer;
         private System.Windows.Forms.Label SelectedFileLbl;
+        private GroupBox SelectedFileGB;
+        private GroupBox BackUpGB;
+        private TableLayoutPanel ButtonsTLP;
+        private Button ClearBtn;
+        private FlowLayoutPanel ButtonsFLP;
+        private ComboBox comboBox1;
+        private ComboBox comboBox2;
     }
 }
 

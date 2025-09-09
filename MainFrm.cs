@@ -296,7 +296,11 @@ namespace Triad_Secure
                 {
                     string passphrase = passFrm.Passphrase;
 
+
                     // Implement Salting, Encryption, And Hashing From Here On Out
+
+                    //Clearing the passphrase
+                    passphrase = string.Empty;
                 }
             }
         }

@@ -100,7 +100,7 @@
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "AccessFrm";
-            Text = "AccessFrm";
+            Text = "File Access Control";
             Load += AccessFrm_Load;
             AccessGB.ResumeLayout(false);
             MainTLP.ResumeLayout(false);

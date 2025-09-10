@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IntegrityFrm));
             MainTLP = new TableLayoutPanel();
             CheckerTLP = new TableLayoutPanel();
             flowLayoutPanel1 = new FlowLayoutPanel();
@@ -357,6 +358,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1178, 744);
             Controls.Add(MainTLP);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(1200, 800);
             Name = "IntegrityFrm";
             Text = "Check Your File's Integrity!";

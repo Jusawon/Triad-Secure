@@ -28,12 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PassFrm));
             PassTLP = new TableLayoutPanel();
             ButtonsTLP = new TableLayoutPanel();
             OkBtn = new Button();
             CancelBtn = new Button();
-            PassTxt = new TextBox();
             InputGB = new GroupBox();
+            PassTxt = new TextBox();
             PassTLP.SuspendLayout();
             ButtonsTLP.SuspendLayout();
             InputGB.SuspendLayout();
@@ -103,17 +104,6 @@
             CancelBtn.UseVisualStyleBackColor = true;
             CancelBtn.Click += CancelBtn_Click;
             // 
-            // PassTxt
-            // 
-            PassTxt.Dock = DockStyle.Fill;
-            PassTxt.Location = new Point(3, 27);
-            PassTxt.Margin = new Padding(20, 3, 20, 3);
-            PassTxt.Name = "PassTxt";
-            PassTxt.PasswordChar = '*';
-            PassTxt.Size = new Size(566, 31);
-            PassTxt.TabIndex = 0;
-            PassTxt.TextChanged += PassTxt_TextChanged;
-            // 
             // InputGB
             // 
             InputGB.Controls.Add(PassTxt);
@@ -125,6 +115,17 @@
             InputGB.TabStop = false;
             InputGB.Text = "Enter The Passphrase For Your Encrypted File:";
             // 
+            // PassTxt
+            // 
+            PassTxt.Dock = DockStyle.Fill;
+            PassTxt.Location = new Point(3, 27);
+            PassTxt.Margin = new Padding(20, 3, 20, 3);
+            PassTxt.Name = "PassTxt";
+            PassTxt.PasswordChar = '*';
+            PassTxt.Size = new Size(566, 31);
+            PassTxt.TabIndex = 0;
+            PassTxt.TextChanged += PassTxt_TextChanged;
+            // 
             // PassFrm
             // 
             AcceptButton = OkBtn;
@@ -133,6 +134,7 @@
             ClientSize = new Size(578, 144);
             Controls.Add(PassTLP);
             FormBorderStyle = FormBorderStyle.Fixed3D;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "PassFrm";

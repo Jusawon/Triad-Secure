@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             BackupContentViewer = new ListView();
             MainFrmMS = new MenuStrip();
             FileMn = new ToolStripMenuItem();
@@ -266,7 +267,7 @@
             ClientSize = new Size(1110, 805);
             Controls.Add(MainTLP);
             Controls.Add(MainFrmMS);
-            IsMdiContainer = true;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = MainFrmMS;
             Margin = new Padding(3, 4, 3, 4);
             MinimumSize = new Size(1131, 861);

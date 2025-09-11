@@ -54,7 +54,7 @@
             PassTLP.RowStyles.Add(new RowStyle());
             PassTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 60F));
             PassTLP.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            PassTLP.Size = new Size(578, 144);
+            PassTLP.Size = new Size(574, 140);
             PassTLP.TabIndex = 0;
             // 
             // ButtonsTLP
@@ -65,11 +65,11 @@
             ButtonsTLP.Controls.Add(OkBtn, 0, 0);
             ButtonsTLP.Controls.Add(CancelBtn, 1, 0);
             ButtonsTLP.Dock = DockStyle.Fill;
-            ButtonsTLP.Location = new Point(3, 60);
+            ButtonsTLP.Location = new Point(3, 59);
             ButtonsTLP.Name = "ButtonsTLP";
             ButtonsTLP.RowCount = 1;
             ButtonsTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            ButtonsTLP.Size = new Size(572, 81);
+            ButtonsTLP.Size = new Size(568, 78);
             ButtonsTLP.TabIndex = 5;
             // 
             // OkBtn
@@ -83,7 +83,7 @@
             OkBtn.Location = new Point(40, 10);
             OkBtn.Margin = new Padding(40, 10, 40, 10);
             OkBtn.Name = "OkBtn";
-            OkBtn.Size = new Size(206, 61);
+            OkBtn.Size = new Size(204, 58);
             OkBtn.TabIndex = 0;
             OkBtn.Text = "OK";
             OkBtn.UseVisualStyleBackColor = false;
@@ -95,10 +95,10 @@
             CancelBtn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             CancelBtn.Dock = DockStyle.Fill;
             CancelBtn.ForeColor = SystemColors.Desktop;
-            CancelBtn.Location = new Point(326, 10);
+            CancelBtn.Location = new Point(324, 10);
             CancelBtn.Margin = new Padding(40, 10, 40, 10);
             CancelBtn.Name = "CancelBtn";
-            CancelBtn.Size = new Size(206, 61);
+            CancelBtn.Size = new Size(204, 58);
             CancelBtn.TabIndex = 3;
             CancelBtn.Text = "Cancel";
             CancelBtn.UseVisualStyleBackColor = true;
@@ -110,7 +110,7 @@
             InputGB.Dock = DockStyle.Fill;
             InputGB.Location = new Point(3, 3);
             InputGB.Name = "InputGB";
-            InputGB.Size = new Size(572, 51);
+            InputGB.Size = new Size(568, 50);
             InputGB.TabIndex = 6;
             InputGB.TabStop = false;
             InputGB.Text = "Enter The Passphrase For Your Encrypted File:";
@@ -122,7 +122,7 @@
             PassTxt.Margin = new Padding(20, 3, 20, 3);
             PassTxt.Name = "PassTxt";
             PassTxt.PasswordChar = '*';
-            PassTxt.Size = new Size(566, 31);
+            PassTxt.Size = new Size(562, 31);
             PassTxt.TabIndex = 0;
             PassTxt.TextChanged += PassTxt_TextChanged;
             // 
@@ -131,7 +131,7 @@
             AcceptButton = OkBtn;
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(578, 144);
+            ClientSize = new Size(574, 140);
             Controls.Add(PassTLP);
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Icon = (Icon)resources.GetObject("$this.Icon");

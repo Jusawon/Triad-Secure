@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static Triad_Secure.Glb;
 
 namespace Triad_Secure
 {
@@ -280,10 +281,31 @@ namespace Triad_Secure
                 {
                     string passphrase = passFrm.Passphrase;
 
+                    using (var optionsFrm = new OptionsFrm())
+                    {
+                        if (optionsFrm.ShowDialog(this) == DialogResult.OK)
+                        {
+                            // Pull out configurable values (iterations, salt length, etc.)
+                            // e.g.
+                            // GlbOptions.Pbkdf2Iterations = optionsFrm.Iterations;
+                            // GlbOptions.SaltLength = optionsFrm.SaltLength;
 
-                    // Implement Salting, Encryption, And Hashing From Here On Out
+                            // Now you can call your Encrypter() with updated settings
+                            // Encrypter(EncryptionAlgorithm, HashAlgorithm, passphrase, InputFile, OutputFile);
+                            using (var accessFrm = new AccessFrm())
+                            {
+                                if (accessFrm.ShowDialog(this) == DialogResult.OK)
+                                {
 
-                    //Clearing the passphrase
+                                }
+                            }
+
+                        }
+                    }
+
+                    //Clearing
+                    GlbOptions.SaltLength = 8;      // default
+                    GlbOptions.Pbkdf2Iterations = 1000; //default
                     passphrase = string.Empty;
                 }
             }

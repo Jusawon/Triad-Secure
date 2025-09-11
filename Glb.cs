@@ -13,7 +13,11 @@ namespace Triad_Secure
     public class Glb
     {
         private const string HeaderMarker = "TRIADSECUREv1";
-        private const int Iterations = 100_000; // PBKDF2 iteration count
+        public static class GlbOptions
+        {
+            public static int Pbkdf2Iterations { get; set; } = 1000; // default
+            public static int SaltLength { get; set; } = 8;            // default
+        }
 
         // Encrypt inputFile -> outputFile using PBKDF2 with chosen hash
         public void Encrypter(string encryptionMethod, string hashMethod, string passphrase, string inputFile, string outputFile)
@@ -23,12 +27,9 @@ namespace Triad_Secure
                 if (algo == null)
                     throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
 
-                byte[] salt = GenerateSalt(32);
+                byte[] salt = GenerateSalt();
 
-                using (var pbkdf2 = new Rfc2898DeriveBytes(passphrase, salt, Iterations, GetHashAlgorithmName(hashMethod)))
-                {
-                    algo.Key = pbkdf2.GetBytes(algo.KeySize / 8);
-                }
+                algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
 
                 algo.GenerateIV();
                 byte[] iv = algo.IV;
@@ -64,11 +65,7 @@ namespace Triad_Secure
                     if (algo == null)
                         throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
 
-                    using (var pbkdf2 = new Rfc2898DeriveBytes(passphrase, salt, Iterations, GetHashAlgorithmName(hashMethod)))
-                    {
-                        algo.Key = pbkdf2.GetBytes(algo.KeySize / 8);
-                    }
-
+                    algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
                     algo.IV = iv;
 
                     try
@@ -102,11 +99,7 @@ namespace Triad_Secure
                     if (algo == null)
                         throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
 
-                    using (var pbkdf2 = new Rfc2898DeriveBytes(passphrase, salt, Iterations, GetHashAlgorithmName(hashMethod)))
-                    {
-                        algo.Key = pbkdf2.GetBytes(algo.KeySize / 8);
-                    }
-
+                    algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
                     algo.IV = iv;
 
                     try
@@ -228,12 +221,24 @@ namespace Triad_Secure
             return buf;
         }
 
-        private static byte[] GenerateSalt(int length = 32)
+        private static byte[] GenerateSalt()
         {
-            byte[] salt = new byte[length];
+            byte[] salt = new byte[GlbOptions.SaltLength];
             using (var rng = RandomNumberGenerator.Create())
                 rng.GetBytes(salt);
             return salt;
+        }
+
+        private byte[] DeriveKey(string passphrase, byte[] salt, int keySizeBytes, string hashMethod, int iterations)
+        {
+            using (var pbkdf2 = new Rfc2898DeriveBytes(
+                passphrase,
+                salt,
+                iterations,
+                GetHashAlgorithmName(hashMethod)))
+            {
+                return pbkdf2.GetBytes(keySizeBytes);
+            }
         }
 
         private static SymmetricAlgorithm CreateSymmetricAlgorithm(string name)

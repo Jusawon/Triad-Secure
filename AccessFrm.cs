@@ -36,7 +36,11 @@ namespace Triad_Secure
 
             PopulateAccounts();
 
-            SetBtn.Enabled = false;
+            SetBtn.Enabled = AccountAccessViewer.Items
+                .Cast<ListViewItem>()
+                .Any(it => it.SubItems.Cast<ListViewItem.ListViewSubItem>()
+                    .Skip(2)
+                    .Any(sub => sub.Text == "[x]"));
         }
 
         private void AccountAccessViewer_MouseClick(object sender, MouseEventArgs e)
@@ -63,6 +67,11 @@ namespace Triad_Secure
         {
             AccountAccessViewer.Items.Clear();
 
+            string currentUser = WindowsIdentity.GetCurrent().Name;
+            string currentSam = currentUser.Contains("\\")
+                ? currentUser.Split('\\').Last() // extract SamAccountName if DOMAIN\User
+                : currentUser;
+
             using (var ctx = new PrincipalContext(ContextType.Machine))
             {
                 // --- Users ---
@@ -75,9 +84,17 @@ namespace Triad_Secure
 
                         var item = new ListViewItem(user.SamAccountName);
                         item.SubItems.Add("User");
+
+                        // Default state: unchecked
                         item.SubItems.Add("[ ]"); // Read
                         item.SubItems.Add("[ ]"); // Write
                         item.SubItems.Add("[ ]"); // Full Control
+
+                        if (user.SamAccountName.Equals(currentSam, StringComparison.OrdinalIgnoreCase))
+                        {
+                            item.SubItems[4].Text = "[x]";
+                        }
+
                         AccountAccessViewer.Items.Add(item);
                     }
                 }
@@ -95,10 +112,14 @@ namespace Triad_Secure
                         item.SubItems.Add("[ ]"); // Read
                         item.SubItems.Add("[ ]"); // Write
                         item.SubItems.Add("[ ]"); // Full Control
+
                         AccountAccessViewer.Items.Add(item);
                     }
                 }
             }
+
+            // Ensure the "Set" button is enabled since one rule (current user) is guaranteed
+            SetBtn.Enabled = true;
         }
 
         private void SetBtn_Click(object sender, EventArgs e)
@@ -120,6 +141,8 @@ namespace Triad_Secure
             {
                 Debug.WriteLine($"{sel.Account}: Read={sel.Read}, Write={sel.Write}, FullControl={sel.FullControl}");
             }
+
+            Close();
 
             // Later: apply to file wrapper after encryption
         }

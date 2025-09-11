@@ -29,24 +29,27 @@
         private void InitializeComponent()
         {
             MainTLP = new TableLayoutPanel();
+            ButtonsFLP = new FlowLayoutPanel();
             SetBtn = new Button();
+            ResetBtn = new Button();
             ControlsTLP = new TableLayoutPanel();
             IterationLbl = new Label();
-            KeyLbl = new Label();
+            SaltLbl = new Label();
             IterationNUD = new NumericUpDown();
-            KeyNUD = new NumericUpDown();
+            SaltNUD = new NumericUpDown();
             MainTLP.SuspendLayout();
+            ButtonsFLP.SuspendLayout();
             ControlsTLP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)IterationNUD).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)KeyNUD).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)SaltNUD).BeginInit();
             SuspendLayout();
             // 
             // MainTLP
             // 
             MainTLP.ColumnCount = 1;
             MainTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            MainTLP.Controls.Add(ButtonsFLP, 0, 1);
             MainTLP.Controls.Add(ControlsTLP, 0, 0);
-            MainTLP.Controls.Add(SetBtn, 0, 1);
             MainTLP.Dock = DockStyle.Fill;
             MainTLP.Location = new Point(0, 0);
             MainTLP.Name = "MainTLP";
@@ -54,13 +57,25 @@
             MainTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 80F));
             MainTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
             MainTLP.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            MainTLP.Size = new Size(578, 194);
+            MainTLP.Size = new Size(578, 244);
             MainTLP.TabIndex = 0;
+            // 
+            // ButtonsFLP
+            // 
+            ButtonsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ButtonsFLP.Controls.Add(SetBtn);
+            ButtonsFLP.Controls.Add(ResetBtn);
+            ButtonsFLP.Dock = DockStyle.Fill;
+            ButtonsFLP.FlowDirection = FlowDirection.RightToLeft;
+            ButtonsFLP.Location = new Point(3, 198);
+            ButtonsFLP.Name = "ButtonsFLP";
+            ButtonsFLP.Size = new Size(572, 43);
+            ButtonsFLP.TabIndex = 1;
             // 
             // SetBtn
             // 
             SetBtn.Anchor = AnchorStyles.Right;
-            SetBtn.Location = new Point(446, 158);
+            SetBtn.Location = new Point(440, 3);
             SetBtn.Margin = new Padding(3, 3, 20, 3);
             SetBtn.Name = "SetBtn";
             SetBtn.Size = new Size(112, 33);
@@ -69,75 +84,100 @@
             SetBtn.UseVisualStyleBackColor = true;
             SetBtn.Click += SetBtn_Click;
             // 
+            // ResetBtn
+            // 
+            ResetBtn.Anchor = AnchorStyles.Right;
+            ResetBtn.Location = new Point(305, 3);
+            ResetBtn.Margin = new Padding(3, 3, 20, 3);
+            ResetBtn.Name = "ResetBtn";
+            ResetBtn.Size = new Size(112, 33);
+            ResetBtn.TabIndex = 1;
+            ResetBtn.Text = "Reset";
+            ResetBtn.UseVisualStyleBackColor = true;
+            ResetBtn.Click += ResetBtn_Click;
+            // 
             // ControlsTLP
             // 
             ControlsTLP.ColumnCount = 2;
             ControlsTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 19.58042F));
             ControlsTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 80.41958F));
             ControlsTLP.Controls.Add(IterationLbl, 0, 1);
-            ControlsTLP.Controls.Add(KeyLbl, 0, 0);
+            ControlsTLP.Controls.Add(SaltLbl, 0, 0);
             ControlsTLP.Controls.Add(IterationNUD, 1, 1);
-            ControlsTLP.Controls.Add(KeyNUD, 1, 0);
+            ControlsTLP.Controls.Add(SaltNUD, 1, 0);
             ControlsTLP.Dock = DockStyle.Fill;
             ControlsTLP.Location = new Point(3, 3);
             ControlsTLP.Name = "ControlsTLP";
             ControlsTLP.RowCount = 2;
             ControlsTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             ControlsTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            ControlsTLP.Size = new Size(572, 149);
+            ControlsTLP.Size = new Size(572, 189);
             ControlsTLP.TabIndex = 3;
             // 
             // IterationLbl
             // 
             IterationLbl.Anchor = AnchorStyles.Left;
             IterationLbl.AutoSize = true;
-            IterationLbl.Location = new Point(3, 99);
+            IterationLbl.Location = new Point(3, 129);
             IterationLbl.Name = "IterationLbl";
             IterationLbl.Size = new Size(90, 25);
             IterationLbl.TabIndex = 0;
             IterationLbl.Text = "Iterations:";
             // 
-            // KeyLbl
+            // SaltLbl
             // 
-            KeyLbl.Anchor = AnchorStyles.Left;
-            KeyLbl.AutoSize = true;
-            KeyLbl.Location = new Point(3, 24);
-            KeyLbl.Name = "KeyLbl";
-            KeyLbl.Size = new Size(103, 25);
-            KeyLbl.TabIndex = 0;
-            KeyLbl.Text = "Key Length:";
+            SaltLbl.Anchor = AnchorStyles.Left;
+            SaltLbl.AutoSize = true;
+            SaltLbl.Location = new Point(3, 34);
+            SaltLbl.Name = "SaltLbl";
+            SaltLbl.Size = new Size(104, 25);
+            SaltLbl.TabIndex = 0;
+            SaltLbl.Text = "Salt Length:";
             // 
             // IterationNUD
             // 
             IterationNUD.Anchor = AnchorStyles.Left;
-            IterationNUD.Location = new Point(115, 96);
+            IterationNUD.BackColor = SystemColors.Window;
+            IterationNUD.Location = new Point(115, 126);
+            IterationNUD.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
+            IterationNUD.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             IterationNUD.Name = "IterationNUD";
+            IterationNUD.ReadOnly = true;
             IterationNUD.Size = new Size(144, 31);
             IterationNUD.TabIndex = 1;
+            IterationNUD.Value = new decimal(new int[] { 1000, 0, 0, 0 });
             // 
-            // KeyNUD
+            // SaltNUD
             // 
-            KeyNUD.Anchor = AnchorStyles.Left;
-            KeyNUD.Location = new Point(115, 21);
-            KeyNUD.Name = "KeyNUD";
-            KeyNUD.Size = new Size(144, 31);
-            KeyNUD.TabIndex = 1;
+            SaltNUD.Anchor = AnchorStyles.Left;
+            SaltNUD.BackColor = SystemColors.Window;
+            SaltNUD.Location = new Point(115, 31);
+            SaltNUD.Maximum = new decimal(new int[] { 128, 0, 0, 0 });
+            SaltNUD.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
+            SaltNUD.Name = "SaltNUD";
+            SaltNUD.ReadOnly = true;
+            SaltNUD.Size = new Size(144, 31);
+            SaltNUD.TabIndex = 1;
+            SaltNUD.Value = new decimal(new int[] { 8, 0, 0, 0 });
             // 
             // OptionsFrm
             // 
             AcceptButton = SetBtn;
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(578, 194);
+            ClientSize = new Size(578, 244);
             ControlBox = false;
             Controls.Add(MainTLP);
             Name = "OptionsFrm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Configure Your Key!";
+            Load += OptionsFrm_Load;
             MainTLP.ResumeLayout(false);
+            ButtonsFLP.ResumeLayout(false);
             ControlsTLP.ResumeLayout(false);
             ControlsTLP.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)IterationNUD).EndInit();
-            ((System.ComponentModel.ISupportInitialize)KeyNUD).EndInit();
+            ((System.ComponentModel.ISupportInitialize)SaltNUD).EndInit();
             ResumeLayout(false);
         }
 
@@ -147,8 +187,10 @@
         private Button SetBtn;
         private TableLayoutPanel ControlsTLP;
         private Label IterationLbl;
-        private Label KeyLbl;
+        private Label SaltLbl;
         private NumericUpDown IterationNUD;
-        private NumericUpDown KeyNUD;
+        private NumericUpDown SaltNUD;
+        private FlowLayoutPanel ButtonsFLP;
+        private Button ResetBtn;
     }
 }

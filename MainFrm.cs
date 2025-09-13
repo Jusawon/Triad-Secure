@@ -96,16 +96,16 @@ namespace Triad_Secure
             }
 
             //DELETE THIS LATER, just for testing :)
-            if (Directory.Exists(backupFolder))
-            {
-                DirectoryInfo di = new DirectoryInfo(backupFolder);
-                DirectorySecurity dirSecurity = di.GetAccessControl();
+            //if (Directory.Exists(backupFolder))
+            //{
+            //    DirectoryInfo di = new DirectoryInfo(backupFolder);
+            //    DirectorySecurity dirSecurity = di.GetAccessControl();
 
-                // Re-enable inheritance and clear custom rules
-                dirSecurity.SetAccessRuleProtection(isProtected: false, preserveInheritance: true);
+            //    // Re-enable inheritance and clear custom rules
+            //    dirSecurity.SetAccessRuleProtection(isProtected: false, preserveInheritance: true);
 
-                di.SetAccessControl(dirSecurity);
-            }
+            //    di.SetAccessControl(dirSecurity);
+            //}
         }
 
         private void EnsureUserBackupFolder()
@@ -145,15 +145,15 @@ namespace Triad_Secure
             }
 
             // DEBUG/TEST ONLY: reset inheritance afterwards
-            if (Directory.Exists(userFolder))
-            {
-                DirectoryInfo di = new DirectoryInfo(userFolder);
-                DirectorySecurity dirSecurity = di.GetAccessControl();
+            //if (Directory.Exists(userFolder))
+            //{
+            //    DirectoryInfo di = new DirectoryInfo(userFolder);
+            //    DirectorySecurity dirSecurity = di.GetAccessControl();
 
-                // Re-enable inheritance (for testing only)
-                dirSecurity.SetAccessRuleProtection(isProtected: false, preserveInheritance: true);
-                di.SetAccessControl(dirSecurity);
-            }
+            //    // Re-enable inheritance (for testing only)
+            //    dirSecurity.SetAccessRuleProtection(isProtected: false, preserveInheritance: true);
+            //    di.SetAccessControl(dirSecurity);
+            //}
         }
 
 
@@ -408,7 +408,25 @@ namespace Triad_Secure
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            OpenSecuredFile(filePath,this);
+            OpenSecuredFile(filePath, this);
+        }
+
+        private void DecryptMn_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Select a secured .trd file to decrypt";
+                ofd.Filter = "Secured Files (*.trd)|*.trd";
+                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                if (ofd.ShowDialog(this) == DialogResult.OK)
+                {
+                    string selectedFile = ofd.FileName;
+
+                    // Call the existing OpenSecuredFile function
+                    Glb.OpenSecuredFile(selectedFile, this);
+                }
+            }
         }
     }
 }

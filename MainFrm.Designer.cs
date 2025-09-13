@@ -45,6 +45,7 @@
             BackUpGB = new GroupBox();
             SelectedFileGB = new GroupBox();
             SelectedFileViewer = new ListView();
+            DecryptMn = new ToolStripMenuItem();
             MainFrmMS.SuspendLayout();
             MiddleTLP.SuspendLayout();
             ButtonsFLP.SuspendLayout();
@@ -80,7 +81,7 @@
             // 
             // FileMn
             // 
-            FileMn.DropDownItems.AddRange(new ToolStripItem[] { OpenMn });
+            FileMn.DropDownItems.AddRange(new ToolStripItem[] { OpenMn, DecryptMn });
             FileMn.Name = "FileMn";
             FileMn.Size = new Size(54, 29);
             FileMn.Text = "File";
@@ -89,7 +90,7 @@
             // 
             OpenMn.Name = "OpenMn";
             OpenMn.ShortcutKeys = Keys.Control | Keys.O;
-            OpenMn.Size = new Size(223, 34);
+            OpenMn.Size = new Size(270, 34);
             OpenMn.Text = "&Open";
             OpenMn.Click += OpenMn_Click;
             // 
@@ -261,6 +262,14 @@
             SelectedFileViewer.TabIndex = 5;
             SelectedFileViewer.UseCompatibleStateImageBehavior = false;
             // 
+            // DecryptMn
+            // 
+            DecryptMn.Name = "DecryptMn";
+            DecryptMn.ShortcutKeys = Keys.Control | Keys.D;
+            DecryptMn.Size = new Size(270, 34);
+            DecryptMn.Text = "Decrypt";
+            DecryptMn.Click += DecryptMn_Click;
+            // 
             // MainFrm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -314,6 +323,7 @@
         private FlowLayoutPanel ButtonsFLP;
         private ComboBox comboBox1;
         private ComboBox comboBox2;
+        private ToolStripMenuItem DecryptMn;
     }
 }
 

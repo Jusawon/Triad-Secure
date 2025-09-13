@@ -64,6 +64,7 @@
             BackupContentViewer.Size = new Size(1096, 316);
             BackupContentViewer.TabIndex = 0;
             BackupContentViewer.UseCompatibleStateImageBehavior = false;
+            BackupContentViewer.MouseDoubleClick += BackupContentViewer_MouseDoubleClick;
             // 
             // MainFrmMS
             // 

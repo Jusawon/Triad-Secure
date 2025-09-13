@@ -51,23 +51,34 @@ namespace Triad_Secure
         {
             using (var ofd = new OpenFileDialog())
             {
-                if (ofd.ShowDialog(this) == DialogResult.OK)
+                if (ofd.ShowDialog(this) != DialogResult.OK) return;
+
+                // Close old stream if already open
+                FirstFileStream?.Dispose();
+
+                string selectedFile = ofd.FileName;
+                string extension = Path.GetExtension(selectedFile);
+
+                if (string.Equals(extension, ".trd", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Close old stream if already open
-                    FirstFileStream?.Dispose();
-
-                    FirstFilePath = ofd.FileName;
-                    FirstFileLbl.Text = "Selected File: " + Path.GetFileName(FirstFilePath);
-                    FirstFileSelected = true;
-
-                    // Open stream (read-only, share read)
-                    FirstFileStream = new FileStream(FirstFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                    if (FirstFileSelected && SecondFileSelected && HashCmb.SelectedIndex > 0)
-                    {
-                        CompareBtn.Enabled = true;
-                    }
+                    string decryptedFile = Glb.OpenSecuredFileForIntegrity(selectedFile, this);
+                    if (decryptedFile == null) return; // User canceled or wrong passphrase
+                    FirstFilePath = decryptedFile;
                 }
+                else
+                {
+                    FirstFilePath = selectedFile;
+                }
+
+                FirstFileStream = new FileStream(FirstFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                FirstFileLbl.Text = "Selected File: " + Path.GetFileName(FirstFilePath);
+                FirstFileSelected = true;
+                ComparisonLbl.Text = "The Files Are:";
+                HashCmb.Enabled = true;
+                FirstTxt.Text =  "";
+
+                if (FirstFileSelected && SecondFileSelected && HashCmb.SelectedIndex > 0)
+                    CompareBtn.Enabled = true;
             }
         }
 
@@ -75,26 +86,48 @@ namespace Triad_Secure
         {
             using (var ofd = new OpenFileDialog())
             {
-                if (Directory.Exists(backupFolder))
-                    ofd.InitialDirectory = backupFolder;
-
-                if (ofd.ShowDialog(this) == DialogResult.OK)
+                try
                 {
-                    // Close old stream if already open
-                    SecondFileStream?.Dispose();
+                    string user = Environment.UserName;
+                    string userBackupFolder = Path.Combine(Application.StartupPath, "Backups", user);
 
-                    SecondFilePath = ofd.FileName;
-                    SecondFileLbl.Text = "Selected File: " + Path.GetFileName(SecondFilePath);
-                    SecondFileSelected = true;
-
-                    // Open stream (read-only, share read)
-                    SecondFileStream = new FileStream(SecondFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                    if (FirstFileSelected && SecondFileSelected && HashCmb.SelectedIndex > 0)
-                    {
-                        CompareBtn.Enabled = true;
-                    }
+                    if (Directory.Exists(userBackupFolder))
+                        ofd.InitialDirectory = userBackupFolder;
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error accessing backup folder:\n{ex.Message}",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                if (ofd.ShowDialog(this) != DialogResult.OK) return;
+
+                // Close old stream if already open
+                SecondFileStream?.Dispose();
+
+                string selectedFile = ofd.FileName;
+                string extension = Path.GetExtension(selectedFile);
+
+                if (string.Equals(extension, ".trd", StringComparison.OrdinalIgnoreCase))
+                {
+                    string decryptedFile = Glb.OpenSecuredFileForIntegrity(selectedFile, this);
+                    if (decryptedFile == null) return; // User canceled or wrong passphrase
+                    SecondFilePath = decryptedFile;
+                }
+                else
+                {
+                    SecondFilePath = selectedFile;
+                }
+
+                SecondFileStream = new FileStream(SecondFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                SecondFileLbl.Text = "Selected File: " + Path.GetFileName(SecondFilePath);
+                SecondFileSelected = true;
+                ComparisonLbl.Text = "The Files Are:";
+                HashCmb.Enabled = true;
+                SecondTxt.Text = "";
+
+                if (FirstFileSelected && SecondFileSelected && HashCmb.SelectedIndex > 0)
+                    CompareBtn.Enabled = true;
             }
         }
 
@@ -107,6 +140,10 @@ namespace Triad_Secure
             FirstFileLbl.Text = "Selected File: ";
             FirstFileSelected = false;
             CompareBtn.Enabled = false;
+
+            ComparisonLbl.Text = "The Files Are:";
+            FirstTxt.Text = string.Empty;
+            HashCmb.Enabled = true;
         }
 
         private void SecondClearBtn_Click(object sender, EventArgs e)
@@ -118,6 +155,10 @@ namespace Triad_Secure
             SecondFileLbl.Text = "Selected File: ";
             SecondFileSelected = false;
             CompareBtn.Enabled = false;
+
+            ComparisonLbl.Text = "The Files Are:";
+            SecondTxt.Text = string.Empty;
+            HashCmb.Enabled = true;
         }
 
         private void ClearBtn_Click(object sender, EventArgs e)
@@ -137,6 +178,36 @@ namespace Triad_Secure
             SecondFileSelected = false;
 
             HashCmb.SelectedIndex = 0;
+
+            CompareBtn.Enabled = false;
+            ComparisonLbl.Text = "The Files Are:";
+            FirstTxt.Text = string.Empty;
+            SecondTxt.Text = string.Empty;
+            HashCmb.Enabled = true;
+        }
+
+        private void CompareBtn_Click(object sender, EventArgs e)
+        {
+            string algo = HashCmb.SelectedItem.ToString();
+
+            bool match = Glb.CheckIntegrity(algo, FirstFilePath, SecondFilePath,
+                                            out string firstHash, out string secondHash);
+
+            // Print hashes to textboxes
+            FirstTxt.Text = firstHash;
+            SecondTxt.Text = secondHash;
+
+            if (match)
+            {
+                ComparisonLbl.Text += " A Match";
+            }
+            else
+            {
+                ComparisonLbl.Text += " Not A Match";
+            }
+
+            HashCmb.Enabled = false;
+            CompareBtn.Enabled = false;
         }
     }
 }

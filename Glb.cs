@@ -20,31 +20,49 @@ namespace Triad_Secure
         }
 
         // Encrypt inputFile -> outputFile using PBKDF2 with chosen hash
-        public void Encrypter(string encryptionMethod, string hashMethod, string passphrase, string inputFile, string outputFile)
+        // Encrypt inputFile -> outputFile using PBKDF2 with chosen hash
+        public static void Encrypter(string encryptionMethod, string hashMethod, string passphrase, string inputFile, string outputFile)
         {
             using (var algo = CreateSymmetricAlgorithm(encryptionMethod))
             {
                 if (algo == null)
                     throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
 
+                // Generate salt + key
                 byte[] salt = GenerateSalt();
-
                 algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
 
+                // Generate IV
                 algo.GenerateIV();
                 byte[] iv = algo.IV;
 
                 using (var outFs = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
                 {
+                    // --- Write plaintext header ---
                     WriteBytesWithLengthPrefix(outFs, salt);
                     WriteBytesWithLengthPrefix(outFs, iv);
 
+                    using (var bwHeader = new BinaryWriter(outFs, Encoding.UTF8, leaveOpen: true))
+                    {
+                        bwHeader.Write(encryptionMethod);
+                        bwHeader.Write(hashMethod);
+                        bwHeader.Write(GlbOptions.Pbkdf2Iterations);
+
+                        // Store original extension
+                        string originalExt = Path.GetExtension(inputFile) ?? string.Empty;
+                        bwHeader.Write(originalExt);
+                    }
+
+                    // --- Encrypt content ---
                     using (var encryptor = algo.CreateEncryptor())
                     using (var cs = new CryptoStream(outFs, encryptor, CryptoStreamMode.Write, leaveOpen: true))
-                    using (var bw = new BinaryWriter(cs, Encoding.UTF8, leaveOpen: true))
+                    using (var bwContent = new BinaryWriter(cs, Encoding.UTF8, leaveOpen: true))
                     using (var inFs = new FileStream(inputFile, FileMode.Open, FileAccess.Read))
                     {
-                        bw.Write(HeaderMarker);
+                        // Write marker inside encrypted content
+                        bwContent.Write(HeaderMarker);
+
+                        // Copy the rest of the file
                         inFs.CopyTo(cs);
                         cs.FlushFinalBlock();
                     }
@@ -52,77 +70,196 @@ namespace Triad_Secure
             }
         }
 
-        // Verify passphrase with PBKDF2
-        public bool VerifyPassphrase(string encryptionMethod, string hashMethod, string passphrase, string encryptedFile)
+        // --- DECRYPTION ---
+        public static bool Decrypter(string passphrase, string encryptedFile, string outputFile, out string originalExtension)
         {
-            using (var inFs = new FileStream(encryptedFile, FileMode.Open, FileAccess.Read))
+            originalExtension = string.Empty;
+
+            try
             {
-                byte[] salt = ReadBytesWithLengthPrefix(inFs);
-                byte[] iv = ReadBytesWithLengthPrefix(inFs);
-
-                using (var algo = CreateSymmetricAlgorithm(encryptionMethod))
+                using (var inFs = new FileStream(encryptedFile, FileMode.Open, FileAccess.Read))
                 {
-                    if (algo == null)
-                        throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
+                    // Read plaintext header first
+                    byte[] salt = ReadBytesWithLengthPrefix(inFs);
+                    byte[] iv = ReadBytesWithLengthPrefix(inFs);
 
-                    algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
-                    algo.IV = iv;
+                    string encryptionMethod, hashMethod;
+                    int iterations;
 
-                    try
+                    using (var brHeader = new BinaryReader(inFs, Encoding.UTF8, leaveOpen: true))
                     {
-                        using (var decryptor = algo.CreateDecryptor())
-                        using (var cs = new CryptoStream(inFs, decryptor, CryptoStreamMode.Read, leaveOpen: true))
-                        using (var br = new BinaryReader(cs, Encoding.UTF8, leaveOpen: true))
-                        {
-                            string marker = br.ReadString();
-                            return marker == HeaderMarker;
-                        }
+                        encryptionMethod = brHeader.ReadString();
+                        hashMethod = brHeader.ReadString();
+                        iterations = brHeader.ReadInt32();
+                        originalExtension = brHeader.ReadString();
                     }
-                    catch
+
+                    // Create algorithm + derive key
+                    using (var algo = CreateSymmetricAlgorithm(encryptionMethod))
                     {
-                        return false;
-                    }
-                }
-            }
-        }
+                        if (algo == null)
+                            throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
 
-        // Decrypt with PBKDF2
-        public bool Decrypter(string encryptionMethod, string hashMethod, string passphrase, string encryptedFile, string outputFile)
-        {
-            using (var inFs = new FileStream(encryptedFile, FileMode.Open, FileAccess.Read))
-            {
-                byte[] salt = ReadBytesWithLengthPrefix(inFs);
-                byte[] iv = ReadBytesWithLengthPrefix(inFs);
+                        algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, iterations);
+                        algo.IV = iv;
 
-                using (var algo = CreateSymmetricAlgorithm(encryptionMethod))
-                {
-                    if (algo == null)
-                        throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
-
-                    algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
-                    algo.IV = iv;
-
-                    try
-                    {
+                        // Decrypt content
                         using (var decryptor = algo.CreateDecryptor())
-                        using (var cs = new CryptoStream(inFs, decryptor, CryptoStreamMode.Read, leaveOpen: true))
-                        using (var br = new BinaryReader(cs, Encoding.UTF8, leaveOpen: true))
+                        using (var cs = new CryptoStream(inFs, decryptor, CryptoStreamMode.Read))
+                        using (var brContent = new BinaryReader(cs, Encoding.UTF8, leaveOpen: true))
                         {
-                            string marker = br.ReadString();
+                            // Verify marker
+                            string marker = brContent.ReadString();
                             if (marker != HeaderMarker) return false;
 
+                            // Write decrypted file
                             using (var outFs = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
                             {
                                 cs.CopyTo(outFs);
                             }
+
                             return true;
                         }
                     }
-                    catch
-                    {
-                        return false;
-                    }
                 }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static void OpenSecuredFile(string securedFilePath, Form parentForm)
+        {
+            try
+            {
+                // Step 1: Check ACL
+                FileInfo fi = new FileInfo(securedFilePath);
+                FileSecurity fs = fi.GetAccessControl();
+                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+
+                bool hasAccess = fs.GetAccessRules(true, true, typeof(NTAccount))
+                    .OfType<FileSystemAccessRule>()
+                    .Any(rule =>
+                        currentUser.Name.Equals(rule.IdentityReference.Value, StringComparison.OrdinalIgnoreCase) &&
+                        rule.AccessControlType == AccessControlType.Allow &&
+                        (rule.FileSystemRights & FileSystemRights.ReadData) != 0);
+
+                if (!hasAccess)
+                {
+                    MessageBox.Show(parentForm, "You do not have permission to access this secured file.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Step 2: Prompt for passphrase
+                using (var passFrm = new PassFrm())
+                {
+                    if (passFrm.ShowDialog(parentForm) != DialogResult.OK) return;
+                    string passphrase = passFrm.Passphrase;
+
+                    // Step 3: Decrypt to temp file
+                    string originalExtension;
+                    bool success = Glb.Decrypter(passphrase, securedFilePath,
+                                                  Path.Combine(Path.GetTempPath(),
+                                                               Path.GetFileNameWithoutExtension(securedFilePath) + "_decrypted"),
+                                                  out originalExtension);
+
+                    if (success)
+                    {
+                        // Append original extension
+                        string outputFile = Path.Combine(Path.GetTempPath(),
+                                                         Path.GetFileNameWithoutExtension(securedFilePath) + "_decrypted" +
+                                                         originalExtension);
+
+                        // If decryption output file is different, rename it
+                        string tempOutputFile = Path.Combine(Path.GetTempPath(),
+                                                             Path.GetFileNameWithoutExtension(securedFilePath) + "_decrypted");
+                        if (File.Exists(tempOutputFile))
+                            File.Move(tempOutputFile, outputFile, overwrite: true);
+
+                        MessageBox.Show(parentForm, $"File decrypted successfully:\n{outputFile}",
+                                        "Decryption Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = outputFile,
+                            UseShellExecute = true
+                        });
+                    }
+                    else
+                    {
+                        MessageBox.Show(parentForm, "Invalid passphrase or corrupted file.",
+                                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    passphrase = string.Empty; // wipe
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(parentForm, $"Error accessing secured file:\n{ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public static string OpenSecuredFileForIntegrity(string securedFilePath, Form parentForm)
+        {
+            try
+            {
+                // Step 1: Check ACL
+                FileInfo fi = new FileInfo(securedFilePath);
+                FileSecurity fs = fi.GetAccessControl();
+                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+
+                bool hasAccess = fs.GetAccessRules(true, true, typeof(NTAccount))
+                    .OfType<FileSystemAccessRule>()
+                    .Any(rule =>
+                        currentUser.Name.Equals(rule.IdentityReference.Value, StringComparison.OrdinalIgnoreCase) &&
+                        rule.AccessControlType == AccessControlType.Allow &&
+                        (rule.FileSystemRights & FileSystemRights.ReadData) != 0);
+
+                if (!hasAccess)
+                {
+                    MessageBox.Show(parentForm, "You do not have permission to access this secured file.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+
+                // Step 2: Prompt for passphrase
+                using var passFrm = new PassFrm();
+                if (passFrm.ShowDialog(parentForm) != DialogResult.OK) return null;
+                string passphrase = passFrm.Passphrase;
+
+                // Step 3: Decrypt to temp file
+                string originalExtension;
+                string tempOutput = Path.Combine(Path.GetTempPath(),
+                                                 Path.GetFileNameWithoutExtension(securedFilePath) + "_decrypted");
+
+                bool success = Decrypter(passphrase, securedFilePath, tempOutput, out originalExtension);
+
+                passphrase = string.Empty; // wipe
+
+                if (!success)
+                {
+                    MessageBox.Show(parentForm, "Invalid passphrase or corrupted file.",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+
+                // Append original extension
+                string outputFile = tempOutput + originalExtension;
+
+                if (File.Exists(tempOutput) && tempOutput != outputFile)
+                    File.Move(tempOutput, outputFile, overwrite: true);
+
+                return outputFile; // return decrypted file path
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(parentForm, $"Error accessing secured file:\n{ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
             }
         }
 
@@ -229,7 +366,7 @@ namespace Triad_Secure
             return salt;
         }
 
-        private byte[] DeriveKey(string passphrase, byte[] salt, int keySizeBytes, string hashMethod, int iterations)
+        private static byte[] DeriveKey(string passphrase, byte[] salt, int keySizeBytes, string hashMethod, int iterations)
         {
             using (var pbkdf2 = new Rfc2898DeriveBytes(
                 passphrase,

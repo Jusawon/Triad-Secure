@@ -135,6 +135,7 @@
             CompareBtn.TabIndex = 5;
             CompareBtn.Text = "Compare";
             CompareBtn.UseVisualStyleBackColor = true;
+            CompareBtn.Click += CompareBtn_Click;
             // 
             // ControlsClearBtn
             // 

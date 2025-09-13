@@ -100,6 +100,7 @@
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "AccessFrm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "File Access Control";
             Load += AccessFrm_Load;
             AccessGB.ResumeLayout(false);

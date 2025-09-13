@@ -84,7 +84,7 @@
             OkBtn.Margin = new Padding(40, 10, 40, 10);
             OkBtn.Name = "OkBtn";
             OkBtn.Size = new Size(204, 58);
-            OkBtn.TabIndex = 0;
+            OkBtn.TabIndex = 1;
             OkBtn.Text = "OK";
             OkBtn.UseVisualStyleBackColor = false;
             OkBtn.Click += OkBtn_Click;
@@ -131,6 +131,7 @@
             AcceptButton = OkBtn;
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = CancelBtn;
             ClientSize = new Size(574, 140);
             Controls.Add(PassTLP);
             FormBorderStyle = FormBorderStyle.Fixed3D;

@@ -17,9 +17,16 @@ namespace Triad_Secure
 {
     public partial class AccessFrm : Form
     {
+        private List<(string Account, bool Read, bool Write, bool FullControl)> _selections
+        = new List<(string, bool, bool, bool)>();
         public AccessFrm()
         {
             InitializeComponent();
+        }
+
+        public List<(string Account, bool Read, bool Write, bool FullControl)> GetSelections()
+        {
+            return _selections;
         }
 
         private void AccessFrm_Load(object sender, EventArgs e)
@@ -98,24 +105,6 @@ namespace Triad_Secure
                         AccountAccessViewer.Items.Add(item);
                     }
                 }
-
-                // --- Groups ---
-                using (var groupSearcher = new PrincipalSearcher(new GroupPrincipal(ctx)))
-                {
-                    foreach (var result in groupSearcher.FindAll())
-                    {
-                        var group = result as GroupPrincipal;
-                        if (group == null) continue;
-
-                        var item = new ListViewItem(group.SamAccountName);
-                        item.SubItems.Add("Group");
-                        item.SubItems.Add("[ ]"); // Read
-                        item.SubItems.Add("[ ]"); // Write
-                        item.SubItems.Add("[ ]"); // Full Control
-
-                        AccountAccessViewer.Items.Add(item);
-                    }
-                }
             }
 
             // Ensure the "Set" button is enabled since one rule (current user) is guaranteed
@@ -124,11 +113,11 @@ namespace Triad_Secure
 
         private void SetBtn_Click(object sender, EventArgs e)
         {
-            var selections = new List<(string Account, bool Read, bool Write, bool FullControl)>();
+            _selections.Clear();
 
             foreach (ListViewItem item in AccountAccessViewer.Items)
             {
-                selections.Add((
+                _selections.Add((
                     Account: item.Text,
                     Read: item.SubItems[2].Text == "[x]",
                     Write: item.SubItems[3].Text == "[x]",
@@ -136,15 +125,8 @@ namespace Triad_Secure
                 ));
             }
 
-            // Example: just debug print
-            foreach (var sel in selections.Where(s => s.Read || s.Write || s.FullControl))
-            {
-                Debug.WriteLine($"{sel.Account}: Read={sel.Read}, Write={sel.Write}, FullControl={sel.FullControl}");
-            }
-
+            DialogResult = DialogResult.OK;
             Close();
-
-            // Later: apply to file wrapper after encryption
         }
     }
 }

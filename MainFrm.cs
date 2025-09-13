@@ -33,9 +33,7 @@ namespace Triad_Secure
         private void MainFrm_Load(object sender, EventArgs e)
         {
             // Hash algorithms
-            var hashAlgos = CryptoConfig.AllowOnlyFipsAlgorithms
-                ? new[] { "SHA1", "SHA256", "SHA384", "SHA512" }
-                : new[] { "MD5", "SHA1", "SHA256", "SHA384", "SHA512" };
+            var hashAlgos = new[] { "SHA1", "SHA256", "SHA384", "SHA512" };
 
             HashCmb.Items.Clear();
             HashCmb.Items.Add("- Pick Your Hashing Method -");
@@ -55,6 +53,7 @@ namespace Triad_Secure
 
             //Ensure folder exists with Administrator-only access
             EnsureAdminOnlyFolder();
+            EnsureUserBackupFolder();
 
             //Setup ListView
             SetupListViews();
@@ -64,47 +63,7 @@ namespace Triad_Secure
             ResizeContent();
 
 
-            /*=========================OLD CODE MIGHT NEED LATER=========================//
-            // ==== Fill Hash Algorithms ====
-            HashCmb.Items.Clear();
-            HashCmb.Items.Add("- Pick Your Hashing Method -"); // placeholder
 
-            var hashAlgos = typeof(HashAlgorithmName).Assembly.GetTypes()
-                .Where(t => typeof(HashAlgorithmName).IsAssignableFrom(t) && !t.IsAbstract)
-                .Select(t => t.Name.Replace("CryptoServiceProvider", "").Replace("Managed", ""))
-                .Distinct()
-                .OrderBy(n => n);
-
-            foreach (var algo in hashAlgos)
-                HashCmb.Items.Add(algo);
-
-            HashCmb.SelectedIndex = 0;
-
-
-            // ==== Fill Encryption Algorithms ====
-            EncryptionCmb.Items.Clear();
-            EncryptionCmb.Items.Add("- Pick Your Encryption Method -"); // placeholder
-
-            var symAlgos = typeof(SymmetricAlgorithm).Assembly.GetTypes()
-                .Where(t => typeof(SymmetricAlgorithm).IsAssignableFrom(t) && !t.IsAbstract)
-                .Select(t => t.Name.Replace("CryptoServiceProvider", "").Replace("Managed", ""))
-                .Distinct();
-
-            foreach (var algo in symAlgos)
-                EncryptionCmb.Items.Add(algo);
-
-            EncryptionCmb.SelectedIndex = 0;
-
-            Doubt that Asymmetric Could be implemented easily
-            var asymAlgos = typeof(AsymmetricAlgorithm).Assembly.GetTypes()
-                .Where(t => typeof(AsymmetricAlgorithm).IsAssignableFrom(t) && !t.IsAbstract)
-                .Select(t => t.Name)
-                .Distinct();
-
-            foreach (var algo in symAlgos.Concat(asymAlgos).OrderBy(n => n))
-                EncryptionCmb.Items.Add(algo);
-            EncryptionCmb.SelectedIndex = 0;
-            */
         }
 
         private void EnsureAdminOnlyFolder()
@@ -149,6 +108,55 @@ namespace Triad_Secure
             }
         }
 
+        private void EnsureUserBackupFolder()
+        {
+            // Use current Windows user
+            string userName = Environment.UserName;
+            string userFolder = Path.Combine(backupFolder, userName);
+
+            if (!Directory.Exists(userFolder))
+            {
+                DirectoryInfo di = Directory.CreateDirectory(userFolder);
+
+                // Security: Only this user has Full Control
+                DirectorySecurity dirSecurity = new DirectorySecurity();
+                dirSecurity.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
+
+                // Remove any inherited rules
+                var rules = dirSecurity.GetAccessRules(true, true, typeof(NTAccount));
+                foreach (FileSystemAccessRule rule in rules)
+                {
+                    dirSecurity.RemoveAccessRule(rule);
+                }
+
+                // Current user SID
+                var currentUserSid = WindowsIdentity.GetCurrent().User;
+
+                FileSystemAccessRule userRule = new FileSystemAccessRule(
+                    currentUserSid,
+                    FileSystemRights.FullControl,
+                    InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+                    PropagationFlags.None,
+                    AccessControlType.Allow);
+
+                dirSecurity.AddAccessRule(userRule);
+
+                di.SetAccessControl(dirSecurity);
+            }
+
+            // DEBUG/TEST ONLY: reset inheritance afterwards
+            if (Directory.Exists(userFolder))
+            {
+                DirectoryInfo di = new DirectoryInfo(userFolder);
+                DirectorySecurity dirSecurity = di.GetAccessControl();
+
+                // Re-enable inheritance (for testing only)
+                dirSecurity.SetAccessRuleProtection(isProtected: false, preserveInheritance: true);
+                di.SetAccessControl(dirSecurity);
+            }
+        }
+
+
         private void MainFrm_Resize(object sender, EventArgs e)
         {
             ResizeContent();
@@ -186,22 +194,39 @@ namespace Triad_Secure
             BackupContentViewer.Items.Clear();
             BackupContentViewer.SmallImageList.Images.Clear();
 
-            string[] files = Directory.GetFiles(backupFolder);
+            string userName = Environment.UserName;
+            string userFolder = Path.Combine(backupFolder, userName);
 
-            foreach (string file in files)
+            // Default to global folder if user folder doesn't exist
+            string targetFolder = Directory.Exists(userFolder) ? userFolder : backupFolder;
+
+            try
             {
-                Icon fileIcon = Icon.ExtractAssociatedIcon(file);
-                BackupContentViewer.SmallImageList.Images.Add(file, fileIcon);
+                string[] files = Directory.GetFiles(targetFolder);
 
-                FileInfo fi = new FileInfo(file);
+                foreach (string file in files)
+                {
+                    Icon fileIcon = Icon.ExtractAssociatedIcon(file);
+                    BackupContentViewer.SmallImageList.Images.Add(file, fileIcon);
 
-                ListViewItem item = new ListViewItem(fi.Name);
-                item.SubItems.Add((fi.Length / 1024) + " KB");
-                item.SubItems.Add(fi.CreationTime.ToString());
-                item.SubItems.Add(fi.LastWriteTime.ToString());
-                item.ImageKey = file;
+                    FileInfo fi = new FileInfo(file);
 
-                BackupContentViewer.Items.Add(item);
+                    ListViewItem item = new ListViewItem(fi.Name);
+                    item.SubItems.Add((fi.Length / 1024) + " KB");
+                    item.SubItems.Add(fi.CreationTime.ToString());
+                    item.SubItems.Add(fi.LastWriteTime.ToString());
+                    item.ImageKey = file;
+
+                    // Store full path for later retrieval
+                    item.Tag = file;
+
+                    BackupContentViewer.Items.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not load backup contents:\n{ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -275,6 +300,7 @@ namespace Triad_Secure
                 HashAlgorithm = HashCmb.SelectedItem.ToString();
                 EncryptionAlgorithm = EncryptionCmb.SelectedItem.ToString();
             }
+
             using (var passFrm = new PassFrm())
             {
                 if (passFrm.ShowDialog(this) == DialogResult.OK)
@@ -285,27 +311,47 @@ namespace Triad_Secure
                     {
                         if (optionsFrm.ShowDialog(this) == DialogResult.OK)
                         {
-                            // Pull out configurable values (iterations, salt length, etc.)
-                            // e.g.
-                            // GlbOptions.Pbkdf2Iterations = optionsFrm.Iterations;
-                            // GlbOptions.SaltLength = optionsFrm.SaltLength;
+                            string inputFile = selectedFilePath!;
+                            string userName = Environment.UserName;
+                            string userFolder = Path.Combine(backupFolder, userName);
 
-                            // Now you can call your Encrypter() with updated settings
-                            // Encrypter(EncryptionAlgorithm, HashAlgorithm, passphrase, InputFile, OutputFile);
+
+                            string backupOutputFile = Path.Combine(
+                                userFolder,
+                                Path.GetFileNameWithoutExtension(inputFile) + ".trd"
+                            );
+
+                            string localOutputFile = Path.Combine(
+                                Path.GetDirectoryName(inputFile)!,
+                                Path.GetFileNameWithoutExtension(inputFile) + ".trd"
+                            );
+
+                            Encrypter(EncryptionAlgorithm, HashAlgorithm, passphrase, inputFile, backupOutputFile);
+
+                            File.Copy(backupOutputFile, localOutputFile, overwrite: true);
+
                             using (var accessFrm = new AccessFrm())
                             {
                                 if (accessFrm.ShowDialog(this) == DialogResult.OK)
                                 {
+                                    var selections = accessFrm.GetSelections(); // implement this in AccessFrm
+                                    Glb.ApplyPermissions(backupOutputFile, selections);
+                                    Glb.ApplyPermissions(localOutputFile, selections);
 
+                                    MessageBox.Show(
+                                        "File was successfully encrypted and secured.\n" +
+                                        $"Backup: {backupOutputFile}\nLocal copy: {localOutputFile}",
+                                        "Success",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
                                 }
                             }
-
                         }
                     }
-
-                    //Clearing
-                    GlbOptions.SaltLength = 8;      // default
-                    GlbOptions.Pbkdf2Iterations = 1000; //default
+                    DisplayBackupContents();
+                    // Reset global values and clear sensitive data
+                    GlbOptions.SaltLength = 8;
+                    GlbOptions.Pbkdf2Iterations = 1000;
                     passphrase = string.Empty;
                 }
             }
@@ -346,6 +392,23 @@ namespace Triad_Secure
             SelectedFileViewer.Items.Clear();
             selectedFileStream?.Dispose();
             FileSelected = false;
+        }
+
+
+        private void BackupContentViewer_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (BackupContentViewer.SelectedItems.Count == 0) return;
+
+            var item = BackupContentViewer.SelectedItems[0];
+            string filePath = item.Tag as string;
+
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                MessageBox.Show("Invalid file selection.",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            OpenSecuredFile(filePath,this);
         }
     }
 }

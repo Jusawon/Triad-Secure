@@ -23,111 +23,121 @@ namespace Triad_Secure
         // Encrypt inputFile -> outputFile using PBKDF2 with chosen hash
         public static void Encrypter(string encryptionMethod, string hashMethod, string passphrase, string inputFile, string outputFile)
         {
-            using (var algo = CreateSymmetricAlgorithm(encryptionMethod))
+            using var algo = CreateSymmetricAlgorithm(encryptionMethod);
+            if (algo == null)
+                throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
+
+            // Generate salt + key for content
+            byte[] contentSalt = GenerateSalt(GlbOptions.SaltLength);
+            algo.Key = DeriveKey(passphrase, contentSalt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
+
+            // Generate IV
+            algo.GenerateIV();
+            byte[] iv = algo.IV;
+
+            // --- Prepare header ---
+            string originalExt = Path.GetExtension(inputFile) ?? string.Empty;
+            using var msHeader = new MemoryStream();
+            using (var bw = new BinaryWriter(msHeader, Encoding.UTF8, leaveOpen: true))
             {
-                if (algo == null)
-                    throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
-
-                // Generate salt + key
-                byte[] salt = GenerateSalt();
-                algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, GlbOptions.Pbkdf2Iterations);
-
-                // Generate IV
-                algo.GenerateIV();
-                byte[] iv = algo.IV;
-
-                using (var outFs = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
-                {
-                    // --- Write plaintext header ---
-                    WriteBytesWithLengthPrefix(outFs, salt);
-                    WriteBytesWithLengthPrefix(outFs, iv);
-
-                    using (var bwHeader = new BinaryWriter(outFs, Encoding.UTF8, leaveOpen: true))
-                    {
-                        bwHeader.Write(encryptionMethod);
-                        bwHeader.Write(hashMethod);
-                        bwHeader.Write(GlbOptions.Pbkdf2Iterations);
-
-                        // Store original extension
-                        string originalExt = Path.GetExtension(inputFile) ?? string.Empty;
-                        bwHeader.Write(originalExt);
-                    }
-
-                    // --- Encrypt content ---
-                    using (var encryptor = algo.CreateEncryptor())
-                    using (var cs = new CryptoStream(outFs, encryptor, CryptoStreamMode.Write, leaveOpen: true))
-                    using (var bwContent = new BinaryWriter(cs, Encoding.UTF8, leaveOpen: true))
-                    using (var inFs = new FileStream(inputFile, FileMode.Open, FileAccess.Read))
-                    {
-                        // Write marker inside encrypted content
-                        bwContent.Write(HeaderMarker);
-
-                        // Copy the rest of the file
-                        inFs.CopyTo(cs);
-                        cs.FlushFinalBlock();
-                    }
-                }
+                bw.Write(encryptionMethod);
+                bw.Write(hashMethod);
+                bw.Write(GlbOptions.Pbkdf2Iterations);
+                bw.Write(originalExt);
             }
+
+            // Generate header salt & mask
+            byte[] headerSalt = GenerateSalt(16); // fixed length salt
+            byte[] mask = SHA256.HashData(Encoding.UTF8.GetBytes(passphrase + Convert.ToBase64String(headerSalt)));
+
+            // XOR header with mask
+            byte[] headerBytes = msHeader.ToArray();
+            byte[] obfuscatedHeader = new byte[headerBytes.Length];
+            for (int i = 0; i < headerBytes.Length; i++)
+                obfuscatedHeader[i] = (byte)(headerBytes[i] ^ mask[i % mask.Length]);
+
+            // --- Write file ---
+            using var outFs = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
+
+            // Write header salt, content salt, IV
+            WriteBytesWithLengthPrefix(outFs, headerSalt);
+            WriteBytesWithLengthPrefix(outFs, contentSalt);
+            WriteBytesWithLengthPrefix(outFs, iv);
+
+            // Write obfuscated header
+            WriteBytesWithLengthPrefix(outFs, obfuscatedHeader);
+
+            // --- Encrypt content ---
+            using var encryptor = algo.CreateEncryptor();
+            using var cs = new CryptoStream(outFs, encryptor, CryptoStreamMode.Write, leaveOpen: true);
+            using var bwContent = new BinaryWriter(cs, Encoding.UTF8, leaveOpen: true);
+            using var inFs = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
+
+            bwContent.Write(HeaderMarker);
+            inFs.CopyTo(cs);
+            cs.FlushFinalBlock();
         }
 
-        // --- DECRYPTION ---
         public static bool Decrypter(string passphrase, string encryptedFile, string outputFile, out string originalExtension)
         {
             originalExtension = string.Empty;
-
             try
             {
-                using (var inFs = new FileStream(encryptedFile, FileMode.Open, FileAccess.Read))
+                using var inFs = new FileStream(encryptedFile, FileMode.Open, FileAccess.Read);
+
+                // Read salts and IV
+                byte[] headerSalt = ReadBytesWithLengthPrefix(inFs);
+                byte[] contentSalt = ReadBytesWithLengthPrefix(inFs);
+                byte[] iv = ReadBytesWithLengthPrefix(inFs);
+
+                // Read obfuscated header
+                byte[] obfuscatedHeader = ReadBytesWithLengthPrefix(inFs);
+
+                // Reconstruct mask and deobfuscate header
+                byte[] mask = SHA256.HashData(Encoding.UTF8.GetBytes(passphrase + Convert.ToBase64String(headerSalt)));
+                byte[] headerBytes = new byte[obfuscatedHeader.Length];
+                for (int i = 0; i < obfuscatedHeader.Length; i++)
+                    headerBytes[i] = (byte)(obfuscatedHeader[i] ^ mask[i % mask.Length]);
+
+                // Read header
+                string encryptionMethod, hashMethod;
+                int iterations;
+                using (var msHeader = new MemoryStream(headerBytes))
+                using (var brHeader = new BinaryReader(msHeader, Encoding.UTF8))
                 {
-                    // Read plaintext header first
-                    byte[] salt = ReadBytesWithLengthPrefix(inFs);
-                    byte[] iv = ReadBytesWithLengthPrefix(inFs);
-
-                    string encryptionMethod, hashMethod;
-                    int iterations;
-
-                    using (var brHeader = new BinaryReader(inFs, Encoding.UTF8, leaveOpen: true))
-                    {
-                        encryptionMethod = brHeader.ReadString();
-                        hashMethod = brHeader.ReadString();
-                        iterations = brHeader.ReadInt32();
-                        originalExtension = brHeader.ReadString();
-                    }
-
-                    // Create algorithm + derive key
-                    using (var algo = CreateSymmetricAlgorithm(encryptionMethod))
-                    {
-                        if (algo == null)
-                            throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
-
-                        algo.Key = DeriveKey(passphrase, salt, algo.KeySize / 8, hashMethod, iterations);
-                        algo.IV = iv;
-
-                        // Decrypt content
-                        using (var decryptor = algo.CreateDecryptor())
-                        using (var cs = new CryptoStream(inFs, decryptor, CryptoStreamMode.Read))
-                        using (var brContent = new BinaryReader(cs, Encoding.UTF8, leaveOpen: true))
-                        {
-                            // Verify marker
-                            string marker = brContent.ReadString();
-                            if (marker != HeaderMarker) return false;
-
-                            // Write decrypted file
-                            using (var outFs = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
-                            {
-                                cs.CopyTo(outFs);
-                            }
-
-                            return true;
-                        }
-                    }
+                    encryptionMethod = brHeader.ReadString();
+                    hashMethod = brHeader.ReadString();
+                    iterations = brHeader.ReadInt32();
+                    originalExtension = brHeader.ReadString();
                 }
+
+                using var algo = CreateSymmetricAlgorithm(encryptionMethod);
+                if (algo == null)
+                    throw new ArgumentException($"Unsupported encryption algorithm: {encryptionMethod}");
+
+                algo.Key = DeriveKey(passphrase, contentSalt, algo.KeySize / 8, hashMethod, iterations);
+                algo.IV = iv;
+
+                // Decrypt content
+                using var decryptor = algo.CreateDecryptor();
+                using var cs = new CryptoStream(inFs, decryptor, CryptoStreamMode.Read);
+                using var brContent = new BinaryReader(cs, Encoding.UTF8, leaveOpen: true);
+
+                // Verify marker
+                string marker = brContent.ReadString();
+                if (marker != HeaderMarker) return false;
+
+                using var outFs = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
+                cs.CopyTo(outFs);
+
+                return true;
             }
             catch
             {
                 return false;
             }
         }
+
 
         public static void OpenSecuredFile(string securedFilePath, Form parentForm)
         {
@@ -358,9 +368,9 @@ namespace Triad_Secure
             return buf;
         }
 
-        private static byte[] GenerateSalt()
+        private static byte[] GenerateSalt(int SaltLength)
         {
-            byte[] salt = new byte[GlbOptions.SaltLength];
+            byte[] salt = new byte[SaltLength];
             using (var rng = RandomNumberGenerator.Create())
                 rng.GetBytes(salt);
             return salt;

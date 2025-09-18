@@ -47,7 +47,7 @@ namespace Triad_Secure
             }
 
             // Generate header salt & mask
-            byte[] headerSalt = GenerateSalt(16); // fixed length salt
+            byte[] headerSalt = GenerateSalt(GlbOptions.SaltLength*2);
             byte[] mask = SHA256.HashData(Encoding.UTF8.GetBytes(passphrase + Convert.ToBase64String(headerSalt)));
 
             // XOR header with mask

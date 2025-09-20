@@ -102,6 +102,25 @@ namespace Triad_Secure
                             item.SubItems[4].Text = "[x]";
                         }
 
+
+                        AccountAccessViewer.Items.Add(item);
+                    }
+                }
+
+                // --- Groups ---
+                using (var groupSearcher = new PrincipalSearcher(new GroupPrincipal(ctx)))
+                {
+                    foreach (var result in groupSearcher.FindAll())
+                    {
+                        var group = result as GroupPrincipal;
+                        if (group == null) continue;
+
+                        var item = new ListViewItem(group.SamAccountName);
+                        item.SubItems.Add("Group");
+                        item.SubItems.Add("[ ]"); // Read
+                        item.SubItems.Add("[ ]"); // Write
+                        item.SubItems.Add("[ ]"); // Full Control
+
                         AccountAccessViewer.Items.Add(item);
                     }
                 }

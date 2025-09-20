@@ -287,9 +287,25 @@ namespace Triad_Secure
 
                 if (ofd.ShowDialog(this) == DialogResult.OK)
                 {
+                    string ext = Path.GetExtension(ofd.FileName)?.ToLowerInvariant();
+
+                    // Block .trd or already secured files
+                    if (ext == ".trd")
+                    {
+                        MessageBox.Show("Unable to select secured (.trd) files.",
+                                        "Invalid Selection",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     DisplaySelectedFile(ofd.FileName);
                     FileSelected = true;
-                    if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0) { SecureBtn.Enabled = true; }
+
+                    if (HashCmb.SelectedIndex > 0 && EncryptionCmb.SelectedIndex > 0)
+                    {
+                        SecureBtn.Enabled = true;
+                    }
                 }
             }
         }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.AccessControl;
+﻿using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Principal;
-using System.IO;
+using System.Text;
 
 namespace Triad_Secure
 {
@@ -19,7 +14,6 @@ namespace Triad_Secure
             public static int SaltLength { get; set; } = 8;            // default
         }
 
-        // Encrypt inputFile -> outputFile using PBKDF2 with chosen hash
         // Encrypt inputFile -> outputFile using PBKDF2 with chosen hash
         public static void Encrypter(string encryptionMethod, string hashMethod, string passphrase, string inputFile, string outputFile)
         {
@@ -47,7 +41,7 @@ namespace Triad_Secure
             }
 
             // Generate header salt & mask
-            byte[] headerSalt = GenerateSalt(GlbOptions.SaltLength*2);
+            byte[] headerSalt = GenerateSalt(GlbOptions.SaltLength * 2);
             byte[] mask = SHA256.HashData(Encoding.UTF8.GetBytes(passphrase + Convert.ToBase64String(headerSalt)));
 
             // XOR header with mask
@@ -318,15 +312,6 @@ namespace Triad_Secure
                     security.AddAccessRule(rule);
                 }
             }
-
-            // Always ensure current user retains FullControl to prevent lockout
-            string currentUser = WindowsIdentity.GetCurrent().Name;
-            var fallbackRule = new FileSystemAccessRule(
-                new NTAccount(currentUser),
-                FileSystemRights.FullControl,
-                AccessControlType.Allow
-            );
-            security.AddAccessRule(fallbackRule);
 
             // Apply the updated ACL back to the file
             fileInfo.SetAccessControl(security);

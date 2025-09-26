@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PassFrm));
             PassTLP = new TableLayoutPanel();
             ButtonsTLP = new TableLayoutPanel();
@@ -35,6 +36,7 @@
             CancelBtn = new Button();
             InputGB = new GroupBox();
             PassTxt = new TextBox();
+            PassToolTip = new ToolTip(components);
             PassTLP.SuspendLayout();
             ButtonsTLP.SuspendLayout();
             InputGB.SuspendLayout();
@@ -86,6 +88,7 @@
             OkBtn.Size = new Size(204, 58);
             OkBtn.TabIndex = 1;
             OkBtn.Text = "OK";
+            PassToolTip.SetToolTip(OkBtn, "Confirm Your Passphrase");
             OkBtn.UseVisualStyleBackColor = false;
             OkBtn.Click += OkBtn_Click;
             // 
@@ -101,6 +104,7 @@
             CancelBtn.Size = new Size(204, 58);
             CancelBtn.TabIndex = 3;
             CancelBtn.Text = "Cancel";
+            PassToolTip.SetToolTip(CancelBtn, "Cancel File Securement");
             CancelBtn.UseVisualStyleBackColor = true;
             CancelBtn.Click += CancelBtn_Click;
             // 
@@ -124,6 +128,7 @@
             PassTxt.PasswordChar = '*';
             PassTxt.Size = new Size(562, 31);
             PassTxt.TabIndex = 0;
+            PassToolTip.SetToolTip(PassTxt, "Insert Your Passphrase");
             PassTxt.TextChanged += PassTxt_TextChanged;
             // 
             // PassFrm
@@ -158,5 +163,6 @@
         private Button OkBtn;
         private Button CancelBtn;
         private GroupBox InputGB;
+        private ToolTip PassToolTip;
     }
 }

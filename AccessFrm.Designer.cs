@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             AccessGB = new GroupBox();
             AccountAccessViewer = new ListView();
             MainTLP = new TableLayoutPanel();
             SetBtn = new Button();
+            AccessToolTip = new ToolTip(components);
             AccessGB.SuspendLayout();
             MainTLP.SuspendLayout();
             SuspendLayout();
@@ -54,6 +56,7 @@
             AccountAccessViewer.Name = "AccountAccessViewer";
             AccountAccessViewer.Size = new Size(816, 448);
             AccountAccessViewer.TabIndex = 0;
+            AccessToolTip.SetToolTip(AccountAccessViewer, "File's Access Control Lists");
             AccountAccessViewer.UseCompatibleStateImageBehavior = false;
             AccountAccessViewer.MouseClick += AccountAccessViewer_MouseClick;
             // 
@@ -85,6 +88,7 @@
             SetBtn.Size = new Size(300, 40);
             SetBtn.TabIndex = 1;
             SetBtn.Text = "&Set Access Controls";
+            AccessToolTip.SetToolTip(SetBtn, "Set Access Control Selection(s)");
             SetBtn.UseVisualStyleBackColor = true;
             SetBtn.Click += SetBtn_Click;
             // 
@@ -114,5 +118,6 @@
         private TableLayoutPanel MainTLP;
         private Button SetBtn;
         private ListView AccountAccessViewer;
+        private ToolTip AccessToolTip;
     }
 }

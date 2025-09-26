@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             BackupContentViewer = new ListView();
             MainFrmMS = new MenuStrip();
             FileMn = new ToolStripMenuItem();
             OpenMn = new ToolStripMenuItem();
+            DecryptMn = new ToolStripMenuItem();
             IntegrityCheckMn = new ToolStripMenuItem();
             MiddleTLP = new TableLayoutPanel();
             ButtonsFLP = new FlowLayoutPanel();
@@ -45,7 +47,7 @@
             BackUpGB = new GroupBox();
             SelectedFileGB = new GroupBox();
             SelectedFileViewer = new ListView();
-            DecryptMn = new ToolStripMenuItem();
+            MainToolTip = new ToolTip(components);
             MainFrmMS.SuspendLayout();
             MiddleTLP.SuspendLayout();
             ButtonsFLP.SuspendLayout();
@@ -64,6 +66,7 @@
             BackupContentViewer.Name = "BackupContentViewer";
             BackupContentViewer.Size = new Size(1096, 316);
             BackupContentViewer.TabIndex = 0;
+            MainToolTip.SetToolTip(BackupContentViewer, "Display Your Backup Folder");
             BackupContentViewer.UseCompatibleStateImageBehavior = false;
             BackupContentViewer.MouseDoubleClick += BackupContentViewer_MouseDoubleClick;
             // 
@@ -75,6 +78,7 @@
             MainFrmMS.Name = "MainFrmMS";
             MainFrmMS.Padding = new Padding(7, 2, 0, 2);
             MainFrmMS.RenderMode = ToolStripRenderMode.Professional;
+            MainFrmMS.ShowItemToolTips = true;
             MainFrmMS.Size = new Size(1110, 33);
             MainFrmMS.TabIndex = 1;
             MainFrmMS.Text = "MainFrmMS";
@@ -85,6 +89,7 @@
             FileMn.Name = "FileMn";
             FileMn.Size = new Size(54, 29);
             FileMn.Text = "File";
+            FileMn.ToolTipText = "File Selection Options";
             // 
             // OpenMn
             // 
@@ -92,7 +97,17 @@
             OpenMn.ShortcutKeys = Keys.Control | Keys.O;
             OpenMn.Size = new Size(270, 34);
             OpenMn.Text = "&Open";
+            OpenMn.ToolTipText = "Open The File You Want To Secure";
             OpenMn.Click += OpenMn_Click;
+            // 
+            // DecryptMn
+            // 
+            DecryptMn.Name = "DecryptMn";
+            DecryptMn.ShortcutKeys = Keys.Control | Keys.D;
+            DecryptMn.Size = new Size(270, 34);
+            DecryptMn.Text = "Decrypt";
+            DecryptMn.ToolTipText = "Decrypt a Secured File (.trd)";
+            DecryptMn.Click += DecryptMn_Click;
             // 
             // IntegrityCheckMn
             // 
@@ -100,7 +115,7 @@
             IntegrityCheckMn.ShortcutKeys = Keys.Control | Keys.Shift | Keys.I;
             IntegrityCheckMn.Size = new Size(161, 29);
             IntegrityCheckMn.Text = "&Integrity Checker";
-            IntegrityCheckMn.ToolTipText = "Check Integrity Between Files and Backuped Files";
+            IntegrityCheckMn.ToolTipText = "Check Integrity Between Files";
             IntegrityCheckMn.Click += IntegrityCheckMn_Click;
             // 
             // MiddleTLP
@@ -144,6 +159,7 @@
             HashCmb.Size = new Size(335, 33);
             HashCmb.TabIndex = 3;
             HashCmb.Text = "- Pick Your Hashing Method -";
+            MainToolTip.SetToolTip(HashCmb, "Select Your Hashing Method");
             HashCmb.SelectedIndexChanged += HashCmb_SelectedIndexChanged;
             // 
             // EncryptionCmb
@@ -156,6 +172,7 @@
             EncryptionCmb.Size = new Size(336, 33);
             EncryptionCmb.TabIndex = 2;
             EncryptionCmb.Text = "- Pick Your Encryption Method -";
+            MainToolTip.SetToolTip(EncryptionCmb, "Select Your Encryption Method");
             EncryptionCmb.SelectedIndexChanged += EncryptionCmb_SelectedIndexChanged;
             // 
             // ButtonsTLP
@@ -189,6 +206,7 @@
             ClearBtn.Size = new Size(198, 35);
             ClearBtn.TabIndex = 3;
             ClearBtn.Text = "&Clear";
+            MainToolTip.SetToolTip(ClearBtn, "Clear Selection(s)");
             ClearBtn.UseVisualStyleBackColor = true;
             ClearBtn.Click += ClearBtn_Click;
             // 
@@ -204,6 +222,7 @@
             SecureBtn.Size = new Size(197, 35);
             SecureBtn.TabIndex = 0;
             SecureBtn.Text = "&Secure";
+            MainToolTip.SetToolTip(SecureBtn, "Secure Your File");
             SecureBtn.UseVisualStyleBackColor = true;
             SecureBtn.Click += EncryptBtn_Click;
             // 
@@ -260,18 +279,12 @@
             SelectedFileViewer.Name = "SelectedFileViewer";
             SelectedFileViewer.Size = new Size(1096, 315);
             SelectedFileViewer.TabIndex = 5;
+            MainToolTip.SetToolTip(SelectedFileViewer, "Display Your Selected File!");
             SelectedFileViewer.UseCompatibleStateImageBehavior = false;
-            // 
-            // DecryptMn
-            // 
-            DecryptMn.Name = "DecryptMn";
-            DecryptMn.ShortcutKeys = Keys.Control | Keys.D;
-            DecryptMn.Size = new Size(270, 34);
-            DecryptMn.Text = "Decrypt";
-            DecryptMn.Click += DecryptMn_Click;
             // 
             // MainFrm
             // 
+            AcceptButton = SecureBtn;
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1110, 805);
@@ -324,6 +337,7 @@
         private ComboBox comboBox1;
         private ComboBox comboBox2;
         private ToolStripMenuItem DecryptMn;
+        private ToolTip MainToolTip;
     }
 }
 

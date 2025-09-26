@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IntegrityFrm));
             MainTLP = new TableLayoutPanel();
             CheckerTLP = new TableLayoutPanel();
@@ -52,6 +53,7 @@
             SecondClearBtn = new Button();
             SecondFileLbl = new Label();
             SecondTxt = new TextBox();
+            IntegrityToolTip = new ToolTip(components);
             MainTLP.SuspendLayout();
             CheckerTLP.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -122,6 +124,7 @@
             HashCmb.Size = new Size(335, 33);
             HashCmb.TabIndex = 4;
             HashCmb.Text = "- Pick Your Hashing Method -";
+            IntegrityToolTip.SetToolTip(HashCmb, "Select Your Hashing Method");
             HashCmb.SelectedIndexChanged += HashCmb_SelectedIndexChanged;
             // 
             // CompareBtn
@@ -134,6 +137,7 @@
             CompareBtn.Size = new Size(151, 33);
             CompareBtn.TabIndex = 5;
             CompareBtn.Text = "Compare";
+            IntegrityToolTip.SetToolTip(CompareBtn, "Compare Selected Files");
             CompareBtn.UseVisualStyleBackColor = true;
             CompareBtn.Click += CompareBtn_Click;
             // 
@@ -146,6 +150,7 @@
             ControlsClearBtn.Size = new Size(151, 33);
             ControlsClearBtn.TabIndex = 6;
             ControlsClearBtn.Text = "Clear";
+            IntegrityToolTip.SetToolTip(ControlsClearBtn, "Clear Selection(s)");
             ControlsClearBtn.UseVisualStyleBackColor = true;
             ControlsClearBtn.Click += ClearBtn_Click;
             // 
@@ -160,6 +165,7 @@
             ComparisonLbl.Size = new Size(159, 32);
             ComparisonLbl.TabIndex = 6;
             ComparisonLbl.Text = "The Files Are:";
+            IntegrityToolTip.SetToolTip(ComparisonLbl, "Display Status Of Selected Files");
             // 
             // FirstGB
             // 
@@ -220,6 +226,7 @@
             FirstOpenBtn.Size = new Size(112, 34);
             FirstOpenBtn.TabIndex = 0;
             FirstOpenBtn.Text = "Open";
+            IntegrityToolTip.SetToolTip(FirstOpenBtn, "Select Your File");
             FirstOpenBtn.UseVisualStyleBackColor = true;
             FirstOpenBtn.Click += FirstOpenBtn_Click;
             // 
@@ -231,6 +238,7 @@
             FirstClearBtn.Size = new Size(112, 34);
             FirstClearBtn.TabIndex = 1;
             FirstClearBtn.Text = "Clear";
+            IntegrityToolTip.SetToolTip(FirstClearBtn, "Clear Selected File");
             FirstClearBtn.UseVisualStyleBackColor = true;
             FirstClearBtn.Click += FirstClearBtn_Click;
             // 
@@ -256,6 +264,7 @@
             FirstTxt.ScrollBars = ScrollBars.Vertical;
             FirstTxt.Size = new Size(1160, 253);
             FirstTxt.TabIndex = 1;
+            IntegrityToolTip.SetToolTip(FirstTxt, "First File's Hash");
             // 
             // SecondGB
             // 
@@ -316,6 +325,7 @@
             SecondOpenBtn.Size = new Size(112, 34);
             SecondOpenBtn.TabIndex = 0;
             SecondOpenBtn.Text = "Open";
+            IntegrityToolTip.SetToolTip(SecondOpenBtn, "Select Your File");
             SecondOpenBtn.UseVisualStyleBackColor = true;
             SecondOpenBtn.Click += SecondOpenBtn_Click;
             // 
@@ -327,6 +337,7 @@
             SecondClearBtn.Size = new Size(112, 34);
             SecondClearBtn.TabIndex = 1;
             SecondClearBtn.Text = "Clear";
+            IntegrityToolTip.SetToolTip(SecondClearBtn, "Clear Selected File");
             SecondClearBtn.UseVisualStyleBackColor = true;
             SecondClearBtn.Click += SecondClearBtn_Click;
             // 
@@ -352,6 +363,7 @@
             SecondTxt.ScrollBars = ScrollBars.Vertical;
             SecondTxt.Size = new Size(1160, 254);
             SecondTxt.TabIndex = 1;
+            IntegrityToolTip.SetToolTip(SecondTxt, "Second File's Hash");
             // 
             // IntegrityFrm
             // 
@@ -408,5 +420,6 @@
         private Button FirstOpenBtn;
         private Button FirstClearBtn;
         private Label FirstFileLbl;
+        private ToolTip IntegrityToolTip;
     }
 }

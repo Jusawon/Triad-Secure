@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             MainTLP = new TableLayoutPanel();
             ButtonsFLP = new FlowLayoutPanel();
             SetBtn = new Button();
@@ -37,6 +38,7 @@
             SaltLbl = new Label();
             IterationNUD = new NumericUpDown();
             SaltNUD = new NumericUpDown();
+            OptionsToolTip = new ToolTip(components);
             MainTLP.SuspendLayout();
             ButtonsFLP.SuspendLayout();
             ControlsTLP.SuspendLayout();
@@ -81,6 +83,7 @@
             SetBtn.Size = new Size(112, 33);
             SetBtn.TabIndex = 0;
             SetBtn.Text = "Set";
+            OptionsToolTip.SetToolTip(SetBtn, "Set Your Configurations");
             SetBtn.UseVisualStyleBackColor = true;
             SetBtn.Click += SetBtn_Click;
             // 
@@ -93,6 +96,7 @@
             ResetBtn.Size = new Size(112, 33);
             ResetBtn.TabIndex = 1;
             ResetBtn.Text = "Reset";
+            OptionsToolTip.SetToolTip(ResetBtn, "Reset Your Configuration(s)");
             ResetBtn.UseVisualStyleBackColor = true;
             ResetBtn.Click += ResetBtn_Click;
             // 
@@ -145,6 +149,7 @@
             IterationNUD.ReadOnly = true;
             IterationNUD.Size = new Size(144, 31);
             IterationNUD.TabIndex = 1;
+            OptionsToolTip.SetToolTip(IterationNUD, "Configure Your PBKDF2 Iterations");
             IterationNUD.Value = new decimal(new int[] { 1000, 0, 0, 0 });
             // 
             // SaltNUD
@@ -158,6 +163,7 @@
             SaltNUD.ReadOnly = true;
             SaltNUD.Size = new Size(144, 31);
             SaltNUD.TabIndex = 1;
+            OptionsToolTip.SetToolTip(SaltNUD, "Configure Your Salt Length");
             SaltNUD.Value = new decimal(new int[] { 8, 0, 0, 0 });
             // 
             // OptionsFrm
@@ -192,5 +198,6 @@
         private NumericUpDown SaltNUD;
         private FlowLayoutPanel ButtonsFLP;
         private Button ResetBtn;
+        private ToolTip OptionsToolTip;
     }
 }

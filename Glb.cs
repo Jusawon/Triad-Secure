@@ -375,25 +375,60 @@ namespace Triad_Secure
 
         private static SymmetricAlgorithm CreateSymmetricAlgorithm(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return null;
-            switch (name.Trim().ToUpperInvariant())
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Algorithm name cannot be empty");
+
+            name = name.Trim().ToUpperInvariant();
+            SymmetricAlgorithm algo = null;
+
+            switch (name)
             {
                 case "AES":
-                case "AES-128":
-                case "AES-192":
                 case "AES-256":
-                    return Aes.Create();
-                case "TRIPLEDES":
+                    algo = Aes.Create();
+                    algo.KeySize = 256;
+                    break;
+
+                case "AES-192":
+                    algo = Aes.Create();
+                    algo.KeySize = 192;
+                    break;
+
+                case "AES-128":
+                    algo = Aes.Create();
+                    algo.KeySize = 128;
+                    break;
+
                 case "3DES":
-                    return TripleDES.Create();
+                case "TRIPLEDES-128":
+                    algo = TripleDES.Create();
+                    algo.KeySize = 128;
+                    break;
+
+                case "TRIPLEDES-192":
+                    algo = TripleDES.Create();
+                    algo.KeySize = 192;
+                    break;
+
                 case "DES":
-                    return DES.Create();
+                    algo = DES.Create();
+                    break;
+
                 case "RC2":
-                    return RC2.Create();
+                    algo = RC2.Create();
+                    break;
+
                 default:
                     throw new ArgumentException($"Unsupported symmetric algorithm: {name}");
             }
+
+            // Use CBC + PKCS7 as a sensible default
+            algo.Mode = CipherMode.CBC;
+            algo.Padding = PaddingMode.PKCS7;
+
+            return algo;
         }
+
 
         private static HashAlgorithmName GetHashAlgorithmName(string name)
         {

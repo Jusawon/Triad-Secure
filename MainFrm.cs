@@ -42,7 +42,7 @@ namespace Triad_Secure
             HashCmb.SelectedIndex = 0;
 
             // Symmetric encryption algorithms
-            var symAlgos = new[] { "AES", "DES", "RC2", "TripleDES" };
+            var symAlgos = new[] { "AES-128", "AES-192", "AES-256", "TripleDES-128", "TripleDES-192", "DES","RC2"};
 
             EncryptionCmb.Items.Clear();
             EncryptionCmb.Items.Add("- Pick Your Encryption Method -");

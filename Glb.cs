@@ -375,15 +375,10 @@ namespace Triad_Secure
 
         private static SymmetricAlgorithm CreateSymmetricAlgorithm(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Algorithm name cannot be empty");
-
-            name = name.Trim().ToUpperInvariant();
             SymmetricAlgorithm algo = null;
 
             switch (name)
             {
-                case "AES":
                 case "AES-256":
                     algo = Aes.Create();
                     algo.KeySize = 256;
@@ -399,13 +394,12 @@ namespace Triad_Secure
                     algo.KeySize = 128;
                     break;
 
-                case "3DES":
-                case "TRIPLEDES-128":
+                case "TripleDES-128":
                     algo = TripleDES.Create();
                     algo.KeySize = 128;
                     break;
 
-                case "TRIPLEDES-192":
+                case "TripleDES-192":
                     algo = TripleDES.Create();
                     algo.KeySize = 192;
                     break;
@@ -422,7 +416,6 @@ namespace Triad_Secure
                     throw new ArgumentException($"Unsupported symmetric algorithm: {name}");
             }
 
-            // Use CBC + PKCS7 as a sensible default
             algo.Mode = CipherMode.CBC;
             algo.Padding = PaddingMode.PKCS7;
 

@@ -36,6 +36,7 @@
             OpenMn = new ToolStripMenuItem();
             DecryptMn = new ToolStripMenuItem();
             IntegrityCheckMn = new ToolStripMenuItem();
+            HelpMn = new ToolStripMenuItem();
             MiddleTLP = new TableLayoutPanel();
             ButtonsFLP = new FlowLayoutPanel();
             HashCmb = new ComboBox();
@@ -73,7 +74,7 @@
             // MainFrmMS
             // 
             MainFrmMS.ImageScalingSize = new Size(24, 24);
-            MainFrmMS.Items.AddRange(new ToolStripItem[] { FileMn, IntegrityCheckMn });
+            MainFrmMS.Items.AddRange(new ToolStripItem[] { FileMn, IntegrityCheckMn, HelpMn });
             MainFrmMS.Location = new Point(0, 0);
             MainFrmMS.Name = "MainFrmMS";
             MainFrmMS.Padding = new Padding(7, 2, 0, 2);
@@ -95,7 +96,7 @@
             // 
             OpenMn.Name = "OpenMn";
             OpenMn.ShortcutKeys = Keys.Control | Keys.O;
-            OpenMn.Size = new Size(270, 34);
+            OpenMn.Size = new Size(240, 34);
             OpenMn.Text = "&Open";
             OpenMn.ToolTipText = "Open The File You Want To Secure";
             OpenMn.Click += OpenMn_Click;
@@ -104,7 +105,7 @@
             // 
             DecryptMn.Name = "DecryptMn";
             DecryptMn.ShortcutKeys = Keys.Control | Keys.D;
-            DecryptMn.Size = new Size(270, 34);
+            DecryptMn.Size = new Size(240, 34);
             DecryptMn.Text = "Decrypt";
             DecryptMn.ToolTipText = "Decrypt a Secured File (.trd)";
             DecryptMn.Click += DecryptMn_Click;
@@ -117,6 +118,14 @@
             IntegrityCheckMn.Text = "&Integrity Checker";
             IntegrityCheckMn.ToolTipText = "Check Integrity Between Files";
             IntegrityCheckMn.Click += IntegrityCheckMn_Click;
+            // 
+            // HelpMn
+            // 
+            HelpMn.Name = "HelpMn";
+            HelpMn.Size = new Size(65, 29);
+            HelpMn.Text = "&Help";
+            HelpMn.ToolTipText = "Access Application's Guide and Help Document";
+            HelpMn.Click += HelpMn_Click;
             // 
             // MiddleTLP
             // 
@@ -338,6 +347,7 @@
         private ComboBox comboBox2;
         private ToolStripMenuItem DecryptMn;
         private ToolTip MainToolTip;
+        private ToolStripMenuItem HelpMn;
     }
 }
 

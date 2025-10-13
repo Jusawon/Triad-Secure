@@ -28,6 +28,7 @@ namespace Triad_Secure
         private FileStream? selectedFileStream;
         private string? selectedFilePath;
         private bool FileSelected = false;
+        string HelpDoc = Path.Combine(Application.StartupPath, "Help", "TriadSecureHelp.pdf");
 
         private string backupFolder = Path.Combine(Application.StartupPath, "Backups");
         private void MainFrm_Load(object sender, EventArgs e)
@@ -42,7 +43,7 @@ namespace Triad_Secure
             HashCmb.SelectedIndex = 0;
 
             // Symmetric encryption algorithms
-            var symAlgos = new[] { "AES-128", "AES-192", "AES-256", "TripleDES-128", "TripleDES-192", "DES","RC2"};
+            var symAlgos = new[] { "AES-128", "AES-192", "AES-256", "TripleDES-128", "TripleDES-192", "DES", "RC2" };
 
             EncryptionCmb.Items.Clear();
             EncryptionCmb.Items.Add("- Pick Your Encryption Method -");
@@ -442,6 +443,18 @@ namespace Triad_Secure
                     // Call the existing OpenSecuredFile function
                     Glb.OpenSecuredFile(selectedFile, this);
                 }
+            }
+        }
+
+        private void HelpMn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(HelpDoc);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening file with associated application: " + ex.Message);
             }
         }
     }

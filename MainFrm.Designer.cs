@@ -266,7 +266,7 @@
             BackUpGB.Size = new Size(1102, 346);
             BackUpGB.TabIndex = 4;
             BackUpGB.TabStop = false;
-            BackUpGB.Text = "Back Up:";
+            BackUpGB.Text = "Backup:";
             // 
             // SelectedFileGB
             // 

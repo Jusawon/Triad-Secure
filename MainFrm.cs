@@ -28,7 +28,7 @@ namespace Triad_Secure
         private FileStream? selectedFileStream;
         private string? selectedFilePath;
         private bool FileSelected = false;
-        string HelpDoc = Path.Combine(Application.StartupPath, "Help", "TriadSecureHelp.pdf");
+        private string HelpDoc = Path.Combine(Application.StartupPath, "Help", "Triad Secure Help.pdf");
 
         private string backupFolder = Path.Combine(Application.StartupPath, "Backups");
         private void MainFrm_Load(object sender, EventArgs e)
@@ -450,12 +450,19 @@ namespace Triad_Secure
         {
             try
             {
-                System.Diagnostics.Process.Start(HelpDoc);
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = HelpDoc,
+                    UseShellExecute = true // <-- IMPORTANT: allows Windows to open with the associated program
+                };
+
+                System.Diagnostics.Process.Start(psi);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error opening file with associated application: " + ex.Message);
+                MessageBox.Show("Error opening help file: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
 }
+

@@ -61,13 +61,20 @@ namespace Triad_Secure
 
                 if (string.Equals(extension, ".trd", StringComparison.OrdinalIgnoreCase))
                 {
-                    FirstOpenBtn.Enabled = true;
-                    ControlsClearBtn.Enabled = true;
-                    FirstClearBtn.Enabled = true;
+                    FirstOpenBtn.Enabled = false;
+                    ControlsClearBtn.Enabled = false;
+                    FirstClearBtn.Enabled = false;
+                    SecondClearBtn.Enabled = false;
+                    ControlsClearBtn.Enabled = false;
+                    SecondOpenBtn.Enabled = false;
+                    CompareBtn.Enabled = false;
                     string decryptedFile = Glb.OpenSecuredFileForIntegrity(selectedFile, this);
                     FirstOpenBtn.Enabled = true;
                     ControlsClearBtn.Enabled = true;
                     FirstClearBtn.Enabled = true;
+                    SecondOpenBtn.Enabled = true;
+                    ControlsClearBtn.Enabled = true;
+                    SecondClearBtn.Enabled = true;
                     if (decryptedFile == null) return; // User canceled or wrong passphrase
                     FirstFilePath = decryptedFile;
                 }
@@ -116,10 +123,17 @@ namespace Triad_Secure
 
                 if (string.Equals(extension, ".trd", StringComparison.OrdinalIgnoreCase))
                 {
+                    FirstOpenBtn.Enabled = false;
+                    ControlsClearBtn.Enabled = false;
+                    FirstClearBtn.Enabled = false;
                     SecondClearBtn.Enabled = false;
                     ControlsClearBtn.Enabled = false;
                     SecondOpenBtn.Enabled = false;
+                    CompareBtn.Enabled = false;
                     string decryptedFile = Glb.OpenSecuredFileForIntegrity(selectedFile, this);
+                    FirstOpenBtn.Enabled = true;
+                    ControlsClearBtn.Enabled = true;
+                    FirstClearBtn.Enabled = true;
                     SecondOpenBtn.Enabled = true;
                     ControlsClearBtn.Enabled = true;
                     SecondClearBtn.Enabled = true;

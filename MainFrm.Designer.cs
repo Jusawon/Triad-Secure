@@ -335,16 +335,12 @@
         private System.Windows.Forms.Button SecureBtn;
         private System.Windows.Forms.ComboBox EncryptionCmb;
         private System.Windows.Forms.ComboBox HashCmb;
-        private System.Windows.Forms.Label BackUpLbl;
         private System.Windows.Forms.ListView SelectedFileViewer;
-        private System.Windows.Forms.Label SelectedFileLbl;
         private GroupBox SelectedFileGB;
         private GroupBox BackUpGB;
         private TableLayoutPanel ButtonsTLP;
         private Button ClearBtn;
         private FlowLayoutPanel ButtonsFLP;
-        private ComboBox comboBox1;
-        private ComboBox comboBox2;
         private ToolStripMenuItem DecryptMn;
         private ToolTip MainToolTip;
         private ToolStripMenuItem HelpMn;

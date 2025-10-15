@@ -61,7 +61,13 @@ namespace Triad_Secure
 
                 if (string.Equals(extension, ".trd", StringComparison.OrdinalIgnoreCase))
                 {
+                    FirstOpenBtn.Enabled = true;
+                    ControlsClearBtn.Enabled = true;
+                    FirstClearBtn.Enabled = true;
                     string decryptedFile = Glb.OpenSecuredFileForIntegrity(selectedFile, this);
+                    FirstOpenBtn.Enabled = true;
+                    ControlsClearBtn.Enabled = true;
+                    FirstClearBtn.Enabled = true;
                     if (decryptedFile == null) return; // User canceled or wrong passphrase
                     FirstFilePath = decryptedFile;
                 }
@@ -110,7 +116,13 @@ namespace Triad_Secure
 
                 if (string.Equals(extension, ".trd", StringComparison.OrdinalIgnoreCase))
                 {
+                    SecondClearBtn.Enabled = false;
+                    ControlsClearBtn.Enabled = false;
+                    SecondOpenBtn.Enabled = false;
                     string decryptedFile = Glb.OpenSecuredFileForIntegrity(selectedFile, this);
+                    SecondOpenBtn.Enabled = true;
+                    ControlsClearBtn.Enabled = true;
+                    SecondClearBtn.Enabled = true;
                     if (decryptedFile == null) return; // User canceled or wrong passphrase
                     SecondFilePath = decryptedFile;
                 }
@@ -189,9 +201,14 @@ namespace Triad_Secure
         private void CompareBtn_Click(object sender, EventArgs e)
         {
             string algo = HashCmb.SelectedItem.ToString();
+            bool match = default;
+            string firstHash = string.Empty;
+            string secondHash = string.Empty;
 
-            bool match = Glb.CheckIntegrity(algo, FirstFilePath, SecondFilePath,
-                                            out string firstHash, out string secondHash);
+            Glb.RunWithLoading(this, () =>
+            match = Glb.CheckIntegrity(algo, FirstFilePath, SecondFilePath,
+                                            out firstHash, out secondHash)
+            );
 
             // Print hashes to textboxes
             FirstTxt.Text = firstHash;

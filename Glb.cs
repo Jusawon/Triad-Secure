@@ -163,11 +163,14 @@ namespace Triad_Secure
                     string passphrase = passFrm.Passphrase;
 
                     // Step 3: Decrypt to temp file
-                    string originalExtension;
-                    bool success = Glb.Decrypter(passphrase, securedFilePath,
+                    string originalExtension = string.Empty;
+                    bool success = default;
+                    RunWithLoading(parentForm, () =>
+                        success = Decrypter(passphrase, securedFilePath,
                                                   Path.Combine(Path.GetTempPath(),
                                                                Path.GetFileNameWithoutExtension(securedFilePath) + "_decrypted"),
-                                                  out originalExtension);
+                                                  out originalExtension)
+                    );
 
                     if (success)
                     {
@@ -236,11 +239,14 @@ namespace Triad_Secure
                 string passphrase = passFrm.Passphrase;
 
                 // Step 3: Decrypt to temp file
-                string originalExtension;
+                string originalExtension = string.Empty;
                 string tempOutput = Path.Combine(Path.GetTempPath(),
                                                  Path.GetFileNameWithoutExtension(securedFilePath) + "_decrypted");
+                bool success = default;
 
-                bool success = Decrypter(passphrase, securedFilePath, tempOutput, out originalExtension);
+                RunWithLoading(parentForm, () =>
+                    success = Decrypter(passphrase, securedFilePath, tempOutput, out originalExtension)
+                    );
 
                 passphrase = string.Empty; // wipe
 
@@ -460,6 +466,25 @@ namespace Triad_Secure
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
+        public static void RunWithLoading(Form parentForm, Action action)
+        {
+            using (var loadFrm = new LoadFrm())
+            {
+                loadFrm.Show(parentForm);  // show the loading form
 
+                // Run the action in the background
+                loadFrm.RunProcess(() =>
+                {
+                    action.Invoke(); // run your encrypt/decrypt/etc
+                });
+
+                // Keep UI responsive while the loading form is visible
+                while (loadFrm.Visible)
+                {
+                    Application.DoEvents();
+                    System.Threading.Thread.Sleep(50);
+                }
+            }
+        }
     }
 }

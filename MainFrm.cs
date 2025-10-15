@@ -342,8 +342,12 @@ namespace Triad_Secure
                                 Path.GetDirectoryName(inputFile)!,
                                 Path.GetFileNameWithoutExtension(inputFile) + ".trd"
                             );
-
-                            Encrypter(EncryptionAlgorithm, HashAlgorithm, passphrase, inputFile, backupOutputFile);
+                            ClearBtn.Enabled = false;
+                            MainFrmMS.Enabled = false;
+                            SecureBtn.Enabled = false;
+                            RunWithLoading(this, () =>
+                                Encrypter(EncryptionAlgorithm, HashAlgorithm, passphrase, inputFile, backupOutputFile)
+                            );
 
                             File.Copy(backupOutputFile, localOutputFile, overwrite: true);
 
@@ -363,6 +367,9 @@ namespace Triad_Secure
                                         MessageBoxIcon.Information);
                                 }
                             }
+                            ClearBtn.Enabled = true;
+                            MainFrmMS.Enabled = true;
+                            ClearBtn_Click(sender, e);
                         }
                     }
                     DisplayBackupContents();

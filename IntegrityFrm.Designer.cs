@@ -374,6 +374,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(1200, 800);
             Name = "IntegrityFrm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Check Your File's Integrity!";
             Load += IntegrityFrm_Load;
             MainTLP.ResumeLayout(false);

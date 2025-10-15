@@ -146,7 +146,6 @@
             IterationNUD.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             IterationNUD.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             IterationNUD.Name = "IterationNUD";
-            IterationNUD.ReadOnly = true;
             IterationNUD.Size = new Size(144, 31);
             IterationNUD.TabIndex = 1;
             OptionsToolTip.SetToolTip(IterationNUD, "Configure Your PBKDF2 Iterations");
@@ -160,7 +159,6 @@
             SaltNUD.Maximum = new decimal(new int[] { 128, 0, 0, 0 });
             SaltNUD.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
             SaltNUD.Name = "SaltNUD";
-            SaltNUD.ReadOnly = true;
             SaltNUD.Size = new Size(144, 31);
             SaltNUD.TabIndex = 1;
             OptionsToolTip.SetToolTip(SaltNUD, "Configure Your Salt Length");

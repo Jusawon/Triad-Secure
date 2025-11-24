@@ -432,7 +432,13 @@ namespace Triad_Secure
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            ClearBtn.Enabled = false;
+            MainFrmMS.Enabled = false;
+            SecureBtn.Enabled = false;
             OpenSecuredFile(filePath, this);
+            ClearBtn.Enabled = true;
+            MainFrmMS.Enabled = true;
+            SecureBtn.Enabled = true;
         }
 
         private void DecryptMn_Click(object sender, EventArgs e)
@@ -446,11 +452,18 @@ namespace Triad_Secure
                 if (ofd.ShowDialog(this) == DialogResult.OK)
                 {
                     string selectedFile = ofd.FileName;
+                    ClearBtn.Enabled = false;
+                    MainFrmMS.Enabled = false;
+                    SecureBtn.Enabled = false;
 
                     // Call the existing OpenSecuredFile function
                     Glb.OpenSecuredFile(selectedFile, this);
                 }
             }
+
+            ClearBtn.Enabled = true;
+            MainFrmMS.Enabled = true;
+            SecureBtn.Enabled = true;
         }
 
         private void HelpMn_Click(object sender, EventArgs e)

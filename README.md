@@ -16,7 +16,7 @@ The features of **Triad Secure** are based on the **CIA Triad**. Those feature i
 ## Triad Secure's Software Architecture
 The **software architecture model** that **Triad Secure** uses is the **Service-Based Architecture Model**, where the application is built from independent software components called "services".
 
-<img width="733" height="462" alt="Triad Secure Architecture Model" src="Assets/Triad Secure Architecture Topology.svg" />
+<img width="800" height="500" alt="Triad Secure Architecture Model" src="Assets/Triad Secure Architecture Topology.svg" />
 
 **Triad Secure** has several **architectural characteristics** from the analysed **problem domain** as well as the **functional** and **non-functional requirements**. Those characteristics include:
 - **Performance**.

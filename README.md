@@ -28,7 +28,7 @@ The **software architecture model** that **Triad Secure** uses is the **Service-
 - **Feasibility**.
 
 ## Acknowledgements
-As this is a project for the **Computational Security** and **Software Architecture** courses done with limited time and with a limited personnel, I **acknowledge the shortcomings of the project** and I hope anyone accessing this project will give us the **benefit of the doubt** and are **open** and **highly grateful** to any **suggestion**, **improvements**, or **branches** if the project interested you.
+As this is a project for the **Security in Computing** and **Software Architecture** courses done with limited time and with a limited personnel, I **acknowledge the shortcomings of the project** and I hope anyone accessing this project will give us the **benefit of the doubt** and are **open** and **highly grateful** to any **suggestion**, **improvements**, or **branches** if the project interested you.
 
 I would also like to give a special thanks to **Mr. Wenripin Chandra, S.Kom., M.TI.** for their **help and assignment** of this project. As well as my gratitude to **friends** and **online queries** that had helped me along the **formulation**, **development**, and **presentation** of **Triad Secure**.
 
